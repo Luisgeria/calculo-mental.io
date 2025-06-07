@@ -733,9 +733,9 @@
             if (currentPlayer) {
                 displayPlayerNameSpan.textContent = currentPlayer.name;
                 currentLevelDisplay.textContent = currentPlayer.currentLevel;
-                questionCountDisplay.textContent = currentPlayer.totalAttemptsInLevel; // Mostrar intentos actuales en el nivel
+                questionCountDisplay.textContent = currentPlayer.correctAnswersInLevel; // Mostrar aciertos actuales en el nivel
                 questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL;
-                currentScoreSpan.textContent = `${currentPlayer.correctAnswersInLevel}/${currentPlayer.totalAttemptsInLevel}`;
+                currentScoreSpan.textContent = `${currentPlayer.correctAnswersInLevel}/${QUESTIONS_PER_LEVEL}`; // Mostrar aciertos/total para el nivel
                 currentFailsSpan.textContent = currentPlayer.failsInLevel;
                 totalTimeDisplay.textContent = formatTime(currentPlayer.totalTimeSeconds);
             } else {
@@ -771,6 +771,8 @@
 
         function generateNewProblem() {
             let num1, num2, operation, correctAnswer;
+            let questionText = ''; // Variable para construir el texto de la pregunta
+
             resultMessageDiv.textContent = '';
             decompositionExplanationDiv.style.display = 'none';
             answerInput.value = '';
@@ -795,6 +797,7 @@
                         operation = '-';
                         correctAnswer = num1 - num2;
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 2: // Sumas y Restas hasta 50, introducción a tablas (2, 5, 10)
                     if (Math.random() < 0.4) { // Sumas
@@ -815,6 +818,7 @@
                         operation = '×';
                         correctAnswer = num1 * num2;
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 3: // Sumas y Restas hasta 100 con acarreo/préstamo. Multiplicaciones (3, 4)
                     if (Math.random() < 0.4) { // Sumas
@@ -835,6 +839,7 @@
                         operation = '×';
                         correctAnswer = num1 * num2;
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 4: // Sumas y Restas hasta 200. Multiplicaciones (6, 7). Div. exactas simples.
                     if (Math.random() < 0.3) { // Sumas
@@ -860,6 +865,7 @@
                         num1 = num2 * correctAnswer;
                         operation = '÷';
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 5: // Sumas y Restas hasta 1000. Multiplicaciones (8, 9).
                     if (Math.random() < 0.35) { // Sumas
@@ -880,6 +886,7 @@
                         operation = '×';
                         correctAnswer = num1 * num2;
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 6: // Multiplicaciones 1 dígito por 2/3 dígitos. Divisiones con resto.
                     if (Math.random() < 0.6) { // Multiplicaciones 1x2/3 digitos
@@ -887,13 +894,15 @@
                         num2 = Math.floor(Math.random() * 200) + 20; // 20-219
                         operation = '×';
                         correctAnswer = num1 * num2;
-                    } else { // Divisiones con resto
+                        questionText = `${num1} ${operation} ${num2} = ?`;
+                    } else { // Divisiones con resto (solo cociente entero)
                         num2 = Math.floor(Math.random() * 8) + 2; // Divisor 2-9
                         let quotient = Math.floor(Math.random() * 30) + 10; // Cociente 10-39
-                        let remainder = Math.floor(Math.random() * (num2 - 1)) + 1; // Resto 1 a num2-1
+                        let remainder = Math.floor(Math.random() * num2); // Resto 0 a num2-1
                         num1 = num2 * quotient + remainder;
                         operation = '÷';
                         correctAnswer = quotient; // Se espera el cociente entero
+                        questionText = `${num1} ${operation} ${num2} (solo cociente) = ?`;
                     }
                     break;
                 case 7: // Sumas/Restas hasta 10,000. Multiplicaciones 2x2 dig.
@@ -914,6 +923,7 @@
                         operation = '×';
                         correctAnswer = num1 * num2;
                     }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
                     break;
                 case 8: // Multiplicaciones 3x2 digitos. Decimales simples (x10, /10, x2, /2)
                     if (Math.random() < 0.5) { // Multiplicaciones 3x2 digitos
@@ -921,96 +931,88 @@
                         num2 = Math.floor(Math.random() * 40) + 10; // 10-49
                         operation = '×';
                         correctAnswer = num1 * num2;
-                    } else { // Decimales simples (multiplicar/dividir por 10, 2, 0.5)
+                        questionText = `${num1} ${operation} ${num2} = ?`;
+                    } else { // Decimales simples (multiplicar/dividir por 10, 2)
                         const decOps = Math.random();
-                        if (decOps < 0.4) { // x10, /10
-                            num1 = (Math.floor(Math.random() * 900) + 10) / 10; // 1.0 - 90.0
+                        if (decOps < 0.5) { // x10, /10
+                            num1 = (Math.floor(Math.random() * 99) + 1) * 0.1; // 0.1 - 9.9
                             operation = (Math.random() < 0.5) ? '×' : '÷';
                             num2 = 10;
                             correctAnswer = (operation === '×') ? parseFloat((num1 * num2).toFixed(2)) : parseFloat((num1 / num2).toFixed(2));
-                        } else if (decOps < 0.7) { // x2
-                            num1 = (Math.floor(Math.random() * 50) + 1) / 10; // 0.1 - 5.0
+                            questionText = `${num1} ${operation} ${num2} = ?`;
+                        } else { // x2, /2
+                            num1 = (Math.floor(Math.random() * 50) + 1) * 0.1; // 0.1 - 5.0
+                            operation = (Math.random() < 0.5) ? '×' : '÷';
                             num2 = 2;
-                            operation = '×';
-                            correctAnswer = parseFloat((num1 * num2).toFixed(2));
-                        } else { // /2 o x0.5
-                            num1 = (Math.floor(Math.random() * 50) + 1) * 2; // 2-100 (para asegurar que sea divisible por 2)
-                            num2 = 2;
-                            operation = '÷';
-                            correctAnswer = parseFloat((num1 / num2).toFixed(2));
+                            // Asegurarse de que la división no de un montón de decimales
+                            if (operation === '÷' && num1 % 0.2 !== 0) { // Ajuste para divisibilidad por 2
+                                num1 = Math.round(num1 * 10) / 10; // Redondear a un decimal
+                                if (num1 % 2 !== 0 && num1 < 10) num1 += 0.1; // Asegurar paridad si es pequeño para evitar 0.5, 1.5, etc.
+                                if (num1 * 10 % 2 !== 0) num1 = (Math.floor(num1 * 10 / 2) * 2) / 10 + (Math.random() < 0.5 ? 0.0 : 0.1); // Intentar hacer que el resultado sea exacto o con 1 decimal
+                                num1 = parseFloat(num1.toFixed(1)); // Redondear a un decimal
+                            }
+                            correctAnswer = (operation === '×') ? parseFloat((num1 * num2).toFixed(2)) : parseFloat((num1 / num2).toFixed(2));
+                            questionText = `${num1} ${operation} ${num2} = ?`;
                         }
                     }
                     break;
-                case 9: // Operaciones combinadas. Fracciones simples.
+                case 9: // Operaciones combinadas (sin paréntesis por ahora) y Fracciones simples.
                     if (Math.random() < 0.6) { // Operaciones combinadas (ej. 5 * 8 + 3)
-                        const ops = ['+', '-', '×', '÷'];
-                        let op1, op2;
                         let n1, n2, n3;
-                        let validProblem = false;
+                        let op1, op2;
+                        let expressionString;
+                        let result;
                         let attempts = 0;
+                        const simpleOps = ['+', '-', '×']; // No divisiones para combinadas por ahora para evitar decimales
                         
-                        // Generar problemas hasta que sean válidos (sin decimales ni negativos intermedios)
-                        while (!validProblem && attempts < 100) {
-                            op1 = ops[Math.floor(Math.random() * ops.length)];
-                            op2 = ops[Math.floor(Math.random() * ops.length)];
-                            n1 = Math.floor(Math.random() * 10) + 2;
+                        while(attempts < 100) {
+                            n1 = Math.floor(Math.random() * 15) + 2;
                             n2 = Math.floor(Math.random() * 10) + 2;
                             n3 = Math.floor(Math.random() * 10) + 2;
+                            op1 = simpleOps[Math.floor(Math.random() * simpleOps.length)];
+                            op2 = simpleOps[Math.floor(Math.random() * simpleOps.length)];
 
-                            let tempResult1, tempResult2;
-                            let expression = `${n1} ${op1} ${n2} ${op2} ${n3}`; // Representación para eval
+                            // Evaluar con prioridad (multiplicación antes que suma/resta)
+                            if (op1 === '×' || op1 === '÷') { // No debería haber divisiones aquí
+                                result = (op1 === '×') ? (n1 * n2) : (n1 / n2);
+                                expressionString = `${n1} ${op1} ${n2} ${op2} ${n3}`;
+                            } else if (op2 === '×' || op2 === '÷') { // No debería haber divisiones aquí
+                                result = (op2 === '×') ? (n2 * n3) : (n2 / n3);
+                                expressionString = `${n1} ${op1} (${n2} ${op2} ${n3})`; // Parentesis para claridad, aunque no se evalúen
+                                if (op1 === '+') result = n1 + result;
+                                else result = n1 - result;
+                            } else { // Solo sumas y restas
+                                result = eval(`${n1} ${op1} ${n2}`);
+                                if (op2 === '+') result += n3;
+                                else result -= n3;
+                                expressionString = `${n1} ${op1} ${n2} ${op2} ${n3}`;
+                            }
 
-                            // Pre-evaluar con orden de operaciones (multiplicación/división primero)
-                            let evaluableExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
-                            
-                            try {
-                                // Simple parser para orden de operaciones
-                                if (op1 === '×' || op1 === '÷') {
-                                    tempResult1 = eval(`${n1} ${op1} ${n2}`);
-                                    if (!Number.isInteger(tempResult1) || tempResult1 < 0) { validProblem = false; attempts++; continue; }
-                                    tempResult2 = eval(`${tempResult1} ${op2} ${n3}`);
-                                } else if (op2 === '×' || op2 === '÷') {
-                                    tempResult1 = eval(`${n2} ${op2} ${n3}`);
-                                    if (!Number.isInteger(tempResult1) || tempResult1 < 0) { validProblem = false; attempts++; continue; }
-                                    tempResult2 = eval(`${n1} ${op1} ${tempResult1}`);
-                                } else { // Solo sumas/restas
-                                    tempResult1 = eval(`${n1} ${op1} ${n2}`);
-                                    if (tempResult1 < 0) { validProblem = false; attempts++; continue; }
-                                    tempResult2 = eval(`${tempResult1} ${op2} ${n3}`);
-                                }
-
-                                if (Number.isInteger(tempResult2) && tempResult2 >= 0) {
-                                    correctAnswer = tempResult2;
-                                    validProblem = true;
-                                }
-                            } catch (e) {
-                                validProblem = false; // Error en la evaluación, intentar de nuevo
+                            if (Number.isInteger(result) && result >= 0 && result < 500) { // Rango razonable
+                                correctAnswer = result;
+                                questionText = expressionString.replace(/\*/g, '×'); // Usar '×' en la pregunta
+                                break;
                             }
                             attempts++;
                         }
-                        
-                        if (!validProblem) { // Si después de 100 intentos no se encuentra, retrocede a un tipo de problema más simple
-                            console.warn("No se pudo generar un problema combinado válido después de 100 intentos. Generando una multiplicación simple.");
-                            num1 = Math.floor(Math.random() * 9) + 2;
-                            num2 = Math.floor(Math.random() * 9) + 2;
-                            operation = '×';
-                            correctAnswer = num1 * num2;
-                            mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
-                        } else {
-                            mathQuestionDiv.textContent = `${n1} ${op1} ${n2} ${op2} ${n3} = ?`;
-                            operation = `${op1} ${op2}`; // Para guardar
+
+                        if (attempts === 100) { // Fallback si no se puede generar un problema complejo
+                            num1 = Math.floor(Math.random() * 50) + 10;
+                            num2 = Math.floor(Math.random() * 40) + 5;
+                            operation = Math.random() < 0.5 ? '+' : '-';
+                            correctAnswer = (operation === '+') ? (num1 + num2) : (num1 - num2);
+                            questionText = `${num1} ${operation} ${num2} = ?`;
                         }
 
                     } else { // Fracciones simples (ej. 1/2 de 10)
                         let denominatorOptions = [2, 3, 4, 5, 10];
-                        let numerator = 1;
+                        let numerator = 1; // Simplificación a fracciones unitarias por ahora
                         let denominator = denominatorOptions[Math.floor(Math.random() * denominatorOptions.length)];
                         
-                        // Asegurar que num2 sea un múltiplo del denominador para un resultado exacto
-                        num2 = (Math.floor(Math.random() * 10) + 2) * denominator; 
+                        // Asegurar que el número a operar sea un múltiplo del denominador para un resultado exacto
+                        num2 = (Math.floor(Math.random() * 15) + 2) * denominator; 
                         
-                        operation = `${numerator}/${denominator} de`;
-                        mathQuestionDiv.textContent = `${numerator}/${denominator} de ${num2} = ?`;
+                        questionText = `${numerator}/${denominator} de ${num2} = ?`;
                         correctAnswer = (num2 / denominator) * numerator;
                     }
                     break;
@@ -1034,33 +1036,30 @@
                     } else { // Divisiones con o sin resto
                         num2 = Math.floor(Math.random() * 15) + 5; // Divisor 5-19
                         let quotient = Math.floor(Math.random() * 60) + 10; // Cociente 10-69
-                        let remainder = Math.floor(Math.random() * (num2 - 1)); // Resto 0 a num2-1 (puede ser exacto)
+                        let remainder = Math.floor(Math.random() * num2); // Resto 0 a num2-1 (puede ser exacto)
                         num1 = num2 * quotient + remainder;
-                        correctAnswer = Math.floor(num1 / num2); // Cociente entero
+                        correctAnswer = quotient; // Cociente entero
                     }
 
-                    if (operation === '÷' && remainder !== 0) {
-                         mathQuestionDiv.textContent = `${num1} ${operation} ${num2} (solo cociente) = ?`;
+                    if (operation === '÷' && num1 % num2 !== 0) { // Si hay resto
+                         questionText = `${num1} ${operation} ${num2} (solo cociente) = ?`;
                     } else {
-                         mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                         questionText = `${num1} ${operation} ${num2} = ?`;
                     }
                     break;
                 default:
                     // Esto no debería ocurrir si el juego está bien gestionado
-                    mathQuestionDiv.textContent = '¡Felicidades, has completado todos los niveles!';
+                    questionText = '¡Felicidades, has completado todos los niveles!';
                     checkButton.style.display = 'none';
                     answerInput.readOnly = true;
                     stopLevelTimer();
                     stopTotalTimer();
+                    currentProblem = null; // No hay problema si el juego ha terminado
                     return;
             }
-
-            // Si no es un caso especial donde ya se formó la pregunta en el switch
-            if (!mathQuestionDiv.textContent.includes('?')) {
-                mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
-            }
             
-            currentProblem = { num1, num2, operation, correctAnswer };
+            mathQuestionDiv.textContent = questionText;
+            currentProblem = { num1, num2, operation, correctAnswer }; // Asegurar que currentProblem se asigne siempre aquí
         }
 
         function checkAnswer() {
@@ -1074,7 +1073,11 @@
                 return;
             }
 
-            currentPlayer.totalAttemptsInLevel++; 
+            // Es importante que totalAttemptsInLevel se incremente en cada intento,
+            // pero el acierto se base en correctAnswersInLevel vs QUESTIONS_PER_LEVEL
+            // y los fallos en failsInLevel vs MAX_FAILS.
+            // questionCountDisplay ahora muestra correctAnswersInLevel.
+            // currentScoreSpan muestra correctAnswersInLevel / QUESTIONS_PER_LEVEL
 
             if (userAnswer === currentProblem.correctAnswer) {
                 resultMessageDiv.textContent = '¡Correcto! 🎉';
@@ -1100,7 +1103,7 @@
                     showModal('¡Oh no!', `${currentPlayer.name}, has acumulado ${MAX_FAILS} fallos en el Nivel ${currentPlayer.currentLevel}. ¡Debes reiniciar tu nivel!`, () => {
                         // Reiniciar stats del nivel actual para este jugador
                         currentPlayer.correctAnswersInLevel = 0;
-                        currentPlayer.totalAttemptsInLevel = 0;
+                        currentPlayer.totalAttemptsInLevel = 0; // También reiniciar intentos
                         currentPlayer.failsInLevel = 0;
                         saveGameProgress();
                         initializeLevel(); // El mismo jugador reinicia su nivel
@@ -1111,8 +1114,15 @@
                     
                     let modalMsg = `${currentPlayer.name}, ¡has superado el Nivel ${currentPlayer.currentLevel}! Tiempo del nivel: ${formatTime(levelTimeSeconds)}.`;
                     
-                    currentPlayer.currentLevel++; // Avanzar al siguiente nivel para este jugador
-                    // Reiniciar stats del nivel para el nuevo nivel que va a empezar
+                    // Solo avanzar de nivel si no ha alcanzado el MAX_LEVELS
+                    if (currentPlayer.currentLevel < MAX_LEVELS) {
+                        currentPlayer.currentLevel++; 
+                    } else {
+                        // El jugador ha terminado todos los niveles
+                        // No se incrementa más el nivel
+                    }
+
+                    // Reiniciar stats del nivel para el nuevo nivel que va a empezar o si ya terminó
                     currentPlayer.correctAnswersInLevel = 0;
                     currentPlayer.totalAttemptsInLevel = 0;
                     currentPlayer.failsInLevel = 0;
@@ -1120,7 +1130,7 @@
 
                     let allPlayersFinishedAllLevels = true;
                     for (const player of allPlayers) {
-                        if (player.currentLevel <= MAX_LEVELS) {
+                        if (player.currentLevel <= MAX_LEVELS) { // Si algún jugador NO ha llegado al MAX_LEVELS + 1
                             allPlayersFinishedAllLevels = false;
                             break;
                         }
@@ -1137,15 +1147,35 @@
                             resetGame(); 
                         });
                     } else {
-                        // Avanzar al siguiente jugador
-                        currentPlayerIndex = (currentPlayerIndex + 1) % allPlayers.length;
-                        saveGameProgress(); 
+                        // Avanzar al siguiente jugador que aún no ha terminado sus niveles
+                        let nextPlayerFound = false;
+                        let startIndex = currentPlayerIndex;
+                        let attemptsToFind = 0;
                         
-                        const nextPlayer = allPlayers[currentPlayerIndex];
-                        modalMsg += `\nAhora es el turno de ${nextPlayer.name} para el Nivel ${nextPlayer.currentLevel}.`;
-                        showModal('Nivel Superado', modalMsg, () => {
-                            initializeLevel(); 
-                        });
+                        // Buscar el siguiente jugador que aún no ha terminado todos los niveles
+                        while (!nextPlayerFound && attemptsToFind < allPlayers.length) {
+                            currentPlayerIndex = (currentPlayerIndex + 1) % allPlayers.length;
+                            if (allPlayers[currentPlayerIndex].currentLevel <= MAX_LEVELS) {
+                                nextPlayerFound = true;
+                            }
+                            attemptsToFind++;
+                        }
+                        
+                        if (nextPlayerFound) {
+                            saveGameProgress(); 
+                            const nextPlayer = allPlayers[currentPlayerIndex];
+                            modalMsg += `\nAhora es el turno de ${nextPlayer.name} para el Nivel ${nextPlayer.currentLevel}.`;
+                            showModal('Nivel Superado', modalMsg, () => {
+                                initializeLevel(); 
+                            });
+                        } else {
+                            // Esto solo debería pasar si ya todos los jugadores terminaron,
+                            // pero la condición `allPlayersFinishedAllLevels` ya lo manejó.
+                            // Si llegamos aquí, es un estado inesperado, quizás todos terminaron.
+                            showModal('Juego Finalizado', 'Todos los jugadores han completado sus niveles. ¡Bien hecho!', () => {
+                                resetGame();
+                            });
+                        }
                     }
                 } else {
                     generateNewProblem(); // Continuar con la siguiente pregunta para el mismo jugador
