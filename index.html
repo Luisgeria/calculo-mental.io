@@ -27,6 +27,7 @@
             max-width: 600px;
             text-align: center;
             animation: fadeIn 1s ease-out;
+            position: relative; /* Para el marcador fijo */
         }
 
         @keyframes fadeIn {
@@ -37,7 +38,7 @@
         h1 {
             color: #00796b;
             margin-bottom: 25px;
-            font-size: 2.2em; /* Ajustado para gamificación */
+            font-size: 2.2em;
         }
 
         h2 {
@@ -58,13 +59,22 @@
             font-size: 1.1em;
             color: #555;
             margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .player-info span {
+            color: #00796b;
         }
 
-        .player-input {
+        .player-setup-controls {
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
-        .player-input input[type="text"] {
+        .player-setup-controls select,
+        .player-setup-controls input[type="text"] {
             padding: 10px;
             font-size: 1em;
             border: 1px solid #ccc;
@@ -73,8 +83,8 @@
             max-width: 250px;
         }
 
-        .player-input button {
-            background-color: #2196f3; /* Azul */
+        .player-setup-controls button {
+            background-color: #2196f3;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -84,18 +94,17 @@
             transition: background-color 0.3s ease;
         }
 
-        .player-input button:hover {
+        .player-setup-controls button:hover {
             background-color: #1976d2;
         }
 
-
         .game-area {
             margin-top: 30px;
-            display: none; /* Oculto inicialmente hasta que el jugador ponga su nombre */
+            display: none;
         }
 
         .question {
-            font-size: 2.5em; /* Ajustado */
+            font-size: 2.5em;
             font-weight: bold;
             color: #3f51b5;
             margin-bottom: 20px;
@@ -129,7 +138,7 @@
         }
 
         #checkButton {
-            background-color: #ff9800; /* Naranja */
+            background-color: #ff9800;
             color: white;
             border: none;
             padding: 12px 25px;
@@ -146,23 +155,23 @@
         }
 
         .result-message {
-            font-size: 1.5em; /* Ajustado */
+            font-size: 1.5em;
             font-weight: bold;
             margin-top: 20px;
             min-height: 1.5em;
         }
 
         .result-message.correct {
-            color: #4CAF50; /* Verde */
+            color: #4CAF50;
         }
 
         .result-message.incorrect {
-            color: #f44336; /* Rojo */
+            color: #f44336;
         }
 
         #decompositionExplanation {
             margin-top: 20px;
-            font-size: 1em; /* Ajustado */
+            font-size: 1em;
             color: #555;
             background-color: #e3f2fd;
             padding: 15px;
@@ -181,7 +190,7 @@
         }
 
         .score-display {
-            font-size: 1.3em; /* Ajustado */
+            font-size: 1.3em;
             margin-top: 25px;
             color: #555;
             font-weight: bold;
@@ -198,10 +207,17 @@
             font-size: 1.1em;
             color: #777;
             margin-top: 10px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-around;
             width: 80%;
             max-width: 400px;
+            flex-wrap: wrap;
+        }
+
+        .timer-display p {
+            margin: 5px 0;
+            flex-basis: 48%;
         }
 
         .timer-display span {
@@ -210,7 +226,7 @@
         }
 
         .reset-button {
-            background-color: #d32f2f; /* Rojo oscuro */
+            background-color: #d32f2f;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -228,15 +244,15 @@
         }
 
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
             justify-content: center;
             align-items: center;
         }
@@ -286,6 +302,62 @@
             background-color: #43a047;
         }
 
+        /* --- New Player Scoreboard Styles --- */
+        #playersScoreboard {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            text-align: left;
+            z-index: 100; /* Asegurar que esté encima de otros elementos */
+            border: 1px solid #ddd;
+        }
+
+        #playersScoreboard h3 {
+            margin-top: 0;
+            color: #00796b;
+            font-size: 1.2em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .player-score-entry {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-score-entry.current-player {
+            font-weight: bold;
+            color: #3f51b5;
+            background-color: #e8f5e9; /* Resaltar jugador actual */
+            padding: 5px 8px;
+            border-radius: 5px;
+        }
+
+        .player-score-entry span {
+            color: #666;
+            margin-left: 5px;
+        }
+        .player-score-entry .player-name {
+            font-size: 1.1em;
+        }
+        .player-score-entry .player-progress {
+            font-size: 0.9em;
+            color: #00796b;
+        }
+        /* End Player Scoreboard Styles */
+
+
         /* Responsive design */
         @media (max-width: 768px) {
             .container {
@@ -325,6 +397,19 @@
                 flex-direction: column;
                 gap: 5px;
             }
+            .timer-display p {
+                flex-basis: 100%;
+            }
+            #playersScoreboard {
+                position: static; /* Cambiar a estático en móviles */
+                margin-top: 20px;
+                max-width: none;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+                order: -1; /* Ponerlo arriba en el flex container */
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -353,15 +438,23 @@
     <div class="container">
         <h1>Juego de Cálculo Mental</h1>
 
-        <div id="playerSetup" class="player-input">
-            <p>Introduce tu nombre para empezar:</p>
-            <input type="text" id="playerNameInput" placeholder="Tu nombre">
+        <div id="playerSetup" class="player-setup-controls">
+            <p>Selecciona el número de jugadores:</p>
+            <select id="numPlayersSelect">
+                <option value="1">1 Jugador</option>
+                <option value="2">2 Jugadores</option>
+                <option value="3">3 Jugadores</option>
+                <option value="4">4 Jugadores</option>
+            </select>
+            <div id="playerNamesInputContainer">
+                <input type="text" id="playerNameInput_0" placeholder="Nombre Jugador 1">
+            </div>
             <button id="startGameButton">Empezar Juego</button>
         </div>
 
         <div class="game-area" id="gameArea">
-            <p class="player-info">Jugador: <span id="displayPlayerName"></span></p>
-            <p class="level-info">Nivel: <span id="currentLevelDisplay">1</span> / Pregunta: <span id="questionCountDisplay">0</span> de 10</p>
+            <p class="player-info">Turno de: <span id="displayPlayerName"></span></p>
+            <p class="level-info">Nivel: <span id="currentLevelDisplay">1</span> / Pregunta: <span id="questionCountDisplay">0</span> de <span id="questionsPerLevelTarget">10</span></p>
             <div class="timer-display">
                 <p>Tiempo Total: <span id="totalTimeDisplay">00:00</span></p>
                 <p>Tiempo de Nivel: <span id="levelTimeDisplay">00:00</span></p>
@@ -381,6 +474,12 @@
         </div>
     </div>
 
+    <div id="playersScoreboard">
+        <h3>Puntuaciones</h3>
+        <div id="scoreboardList">
+            </div>
+    </div>
+
     <div id="gameModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle"></h3>
@@ -394,28 +493,27 @@
         const QUESTIONS_PER_LEVEL = 10;
         const MAX_FAILS = 3;
 
-        let playerName = '';
-        let currentLevel = 1;
-        let correctAnswersInLevel = 0;
-        let totalAttemptsInLevel = 0;
-        let failsInLevel = 0;
-        let currentProblem = {}; // Almacena la pregunta y la respuesta correcta
+        // --- Multi-Player Variables ---
+        let allPlayers = []; // Array de objetos de jugador
+        let currentPlayerIndex = 0; // Índice del jugador actual en allPlayers
+        let currentProblem; // Almacena la pregunta actual
 
-        let totalTimeSeconds = 0;
-        let levelTimeSeconds = 0;
-        let totalTimerInterval;
-        let levelTimerInterval;
+        let levelTimeSeconds = 0; // Tiempo para el nivel actual del jugador actual
+        let totalTimerInterval; // Intervalo para el cronómetro total (del jugador actual)
+        let levelTimerInterval; // Intervalo para el cronómetro del nivel (del jugador actual)
 
         // --- DOM Elements ---
         const playerSetupDiv = document.getElementById('playerSetup');
-        const playerNameInput = document.getElementById('playerNameInput');
+        const numPlayersSelect = document.getElementById('numPlayersSelect');
+        const playerNamesInputContainer = document.getElementById('playerNamesInputContainer');
         const startGameButton = document.getElementById('startGameButton');
         const gameAreaDiv = document.getElementById('gameArea');
         const displayPlayerNameSpan = document.getElementById('displayPlayerName');
         const currentLevelDisplay = document.getElementById('currentLevelDisplay');
         const questionCountDisplay = document.getElementById('questionCountDisplay');
-        const totalTimeDisplay = document.getElementById('totalTimeDisplay'); // Nuevo
-        const levelTimeDisplay = document.getElementById('levelTimeDisplay'); // Nuevo
+        const questionsPerLevelTarget = document.getElementById('questionsPerLevelTarget'); // Nuevo: muestra el total de preguntas por nivel
+        const totalTimeDisplay = document.getElementById('totalTimeDisplay');
+        const levelTimeDisplay = document.getElementById('levelTimeDisplay');
         const mathQuestionDiv = document.getElementById('mathQuestion');
         const answerInput = document.getElementById('answerInput');
         const checkButton = document.getElementById('checkButton');
@@ -429,21 +527,14 @@
         const modalMessage = document.getElementById('modalMessage');
         const modalButton = document.getElementById('modalButton');
 
-        // --- Event Listeners ---
-        startGameButton.addEventListener('click', () => {
-            playerName = playerNameInput.value.trim();
-            if (playerName) {
-                playerSetupDiv.style.display = 'none';
-                gameAreaDiv.style.display = 'block';
-                displayPlayerNameSpan.textContent = playerName;
-                loadGameProgress(); // Carga el progreso, incluyendo el tiempo total
-                startTotalTimer();
-                initializeLevel();
-            } else {
-                alert('Por favor, introduce tu nombre.');
-            }
-        });
+        // Nuevo marcador de jugadores
+        const playersScoreboard = document.getElementById('playersScoreboard');
+        const scoreboardList = document.getElementById('scoreboardList');
 
+
+        // --- Event Listeners ---
+        numPlayersSelect.addEventListener('change', generatePlayerNameInputs);
+        startGameButton.addEventListener('click', startGame);
         checkButton.addEventListener('click', checkAnswer);
         answerInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
@@ -453,6 +544,53 @@
         modalButton.addEventListener('click', handleModalContinue);
         resetGameButton.addEventListener('click', resetGame);
 
+        // --- Player Setup ---
+        function generatePlayerNameInputs() {
+            const numPlayers = parseInt(numPlayersSelect.value);
+            playerNamesInputContainer.innerHTML = '';
+            for (let i = 0; i < numPlayers; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `playerNameInput_${i}`;
+                input.placeholder = `Nombre Jugador ${i + 1}`;
+                input.value = `Jugador ${i + 1}`; // Valor por defecto
+                playerNamesInputContainer.appendChild(input);
+            }
+        }
+
+        function startGame() {
+            const numPlayers = parseInt(numPlayersSelect.value);
+            allPlayers = [];
+            for (let i = 0; i < numPlayers; i++) {
+                const nameInput = document.getElementById(`playerNameInput_${i}`);
+                const playerName = nameInput.value.trim();
+                if (!playerName) {
+                    alert(`Por favor, introduce el nombre del Jugador ${i + 1}.`);
+                    return;
+                }
+                allPlayers.push({
+                    name: playerName,
+                    currentLevel: 1,
+                    correctAnswersInLevel: 0, // Aciertos en el nivel actual
+                    totalAttemptsInLevel: 0, // Intentos en el nivel actual
+                    failsInLevel: 0, // Fallos en el nivel actual
+                    totalTimeSeconds: 0,
+                    levelTimes: {} // Almacena el tiempo que le llevó cada nivel
+                });
+            }
+
+            currentPlayerIndex = 0; // Siempre empezar con el primer jugador
+            playerSetupDiv.style.display = 'none';
+            gameAreaDiv.style.display = 'block';
+            playersScoreboard.style.display = 'block'; // Mostrar el marcador de jugadores
+            
+            // Cargar progreso si existe, de lo contrario, inicializar para el primer jugador
+            if (!loadGameProgress()) { 
+                initializeLevel(); // Esto también inicia los cronómetros para el primer jugador
+            }
+            startTotalTimer(); 
+            updatePlayersScoreboard(); // Actualizar el marcador inicial
+        }
 
         // --- Timer Functions ---
         function formatTime(seconds) {
@@ -466,9 +604,12 @@
         function startTotalTimer() {
             if (totalTimerInterval) clearInterval(totalTimerInterval);
             totalTimerInterval = setInterval(() => {
-                totalTimeSeconds++;
-                totalTimeDisplay.textContent = formatTime(totalTimeSeconds);
-                saveGameProgress(); // Guardar el tiempo total regularmente
+                const currentPlayer = allPlayers[currentPlayerIndex];
+                if (currentPlayer) {
+                    currentPlayer.totalTimeSeconds++;
+                    totalTimeDisplay.textContent = formatTime(currentPlayer.totalTimeSeconds);
+                    saveGameProgress(); 
+                }
             }, 1000);
         }
 
@@ -477,7 +618,7 @@
         }
 
         function startLevelTimer() {
-            levelTimeSeconds = 0; // Reiniciar el tiempo del nivel al empezar uno nuevo
+            levelTimeSeconds = 0; // Reiniciar el tiempo del nivel para el jugador actual
             levelTimeDisplay.textContent = formatTime(levelTimeSeconds);
             if (levelTimerInterval) clearInterval(levelTimerInterval);
             levelTimerInterval = setInterval(() => {
@@ -495,49 +636,54 @@
 
         function saveGameProgress() {
             const gameProgress = {
-                playerName: playerName,
-                currentLevel: currentLevel,
-                correctAnswersInLevel: correctAnswersInLevel,
-                totalAttemptsInLevel: totalAttemptsInLevel,
-                failsInLevel: failsInLevel,
-                totalTimeSeconds: totalTimeSeconds // Guardar tiempo total
+                allPlayers: allPlayers,
+                currentPlayerIndex: currentPlayerIndex
             };
-            localStorage.setItem('mentalMathGameProgress', JSON.stringify(gameProgress));
+            localStorage.setItem('mentalMathGameMultiPlayerProgress', JSON.stringify(gameProgress));
         }
 
         function loadGameProgress() {
-            const savedProgress = localStorage.getItem('mentalMathGameProgress');
+            const savedProgress = localStorage.getItem('mentalMathGameMultiPlayerProgress');
             if (savedProgress) {
                 const gameProgress = JSON.parse(savedProgress);
-                playerName = gameProgress.playerName;
-                currentLevel = gameProgress.currentLevel;
-                correctAnswersInLevel = gameProgress.correctAnswersInLevel;
-                totalAttemptsInLevel = gameProgress.totalAttemptsInLevel;
-                failsInLevel = gameProgress.failsInLevel;
-                totalTimeSeconds = gameProgress.totalTimeSeconds || 0; // Cargar tiempo total, o 0 si no existe
-                displayPlayerNameSpan.textContent = playerName;
-                totalTimeDisplay.textContent = formatTime(totalTimeSeconds); // Actualizar display
+                allPlayers = gameProgress.allPlayers;
+                currentPlayerIndex = gameProgress.currentPlayerIndex;
+
+                allPlayers.forEach(player => {
+                    if (typeof player.totalTimeSeconds === 'undefined') player.totalTimeSeconds = 0;
+                    if (typeof player.levelTimes === 'undefined') player.levelTimes = {};
+                    // Asegurar que las propiedades de nivel estén inicializadas si se cargan de una partida vieja
+                    if (typeof player.correctAnswersInLevel === 'undefined') player.correctAnswersInLevel = 0;
+                    if (typeof player.totalAttemptsInLevel === 'undefined') player.totalAttemptsInLevel = 0;
+                    if (typeof player.failsInLevel === 'undefined') player.failsInLevel = 0;
+                    if (typeof player.currentLevel === 'undefined') player.currentLevel = 1;
+
+                });
+
+                initializeLevel(true); // Pasar 'true' para indicar que es una carga inicial
+                return true; 
             }
+            return false;
         }
 
         function resetGame() {
-            if (confirm('¿Estás seguro de que quieres reiniciar el juego? Se perderá todo tu progreso.')) {
-                localStorage.removeItem('mentalMathGameProgress');
-                playerName = '';
-                currentLevel = 1;
-                correctAnswersInLevel = 0;
-                totalAttemptsInLevel = 0;
-                failsInLevel = 0;
-                totalTimeSeconds = 0; // Reiniciar tiempo total
+            if (confirm('¿Estás seguro de que quieres reiniciar el juego? Se perderá todo tu progreso de todos los jugadores.')) {
+                localStorage.removeItem('mentalMathGameMultiPlayerProgress');
+                allPlayers = [];
+                currentPlayerIndex = 0;
+                levelTimeSeconds = 0;
                 stopTotalTimer();
-                stopLevelTimer(); // Asegurarse de que el cronómetro de nivel también pare
+                stopLevelTimer();
                 totalTimeDisplay.textContent = formatTime(0);
                 levelTimeDisplay.textContent = formatTime(0);
 
                 playerSetupDiv.style.display = 'block';
                 gameAreaDiv.style.display = 'none';
-                playerNameInput.value = '';
-                updateScoreDisplay();
+                playersScoreboard.style.display = 'none'; // Ocultar el marcador
+                generatePlayerNameInputs(); 
+                
+                // Limpiar la interfaz de juego
+                updateScoreDisplay(); // Esto ya inicializa con valores predeterminados (0/0) si no hay jugador
                 mathQuestionDiv.textContent = '¡A por ello!';
                 resultMessageDiv.textContent = '';
                 decompositionExplanationDiv.style.display = 'none';
@@ -547,20 +693,78 @@
             }
         }
 
-        function initializeLevel() {
-            correctAnswersInLevel = 0;
-            totalAttemptsInLevel = 0;
-            failsInLevel = 0;
-            updateScoreDisplay();
-            startLevelTimer(); // Iniciar cronómetro de nivel al empezar un nivel
+        function initializeLevel(isInitialLoad = false) {
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            if (!currentPlayer) {
+                console.error("No current player found.");
+                return;
+            }
+
+            displayPlayerNameSpan.textContent = currentPlayer.name;
+            currentLevelDisplay.textContent = currentPlayer.currentLevel;
+            questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL; // Asegurarse de que muestre el total
+            
+            // Si es una carga inicial o el jugador está empezando un nuevo nivel, reiniciar contadores de nivel
+            if (isInitialLoad || currentPlayer.totalAttemptsInLevel === 0) {
+                // Si totalAttemptsInLevel es 0, significa que es el inicio limpio del nivel para este jugador
+                // O si es carga inicial, queremos que empiece con las stats que tenía en ese nivel.
+                // En este caso, no reiniciamos si es carga inicial, sino que usamos los valores cargados.
+                // Si no es carga inicial, y el jugador ha completado/fallado su nivel anterior, 
+                // sus correctAnswersInLevel, totalAttemptsInLevel, failsInLevel ya se habrán reiniciado.
+            }
+
+            updateScoreDisplay(); // Muestra el progreso actual del jugador en el nivel
+            
+            // Reiniciar o continuar cronómetro de nivel
+            if (!isInitialLoad) {
+                startLevelTimer(); 
+            } else { 
+                levelTimeSeconds = 0; // Al cargar, el cronómetro de nivel se reinicia para la nueva sesión de juego
+                levelTimeDisplay.textContent = formatTime(0);
+                startLevelTimer(); 
+            }
+            
             generateNewProblem();
+            updatePlayersScoreboard(); // Actualizar el marcador de jugadores
         }
 
         function updateScoreDisplay() {
-            currentLevelDisplay.textContent = currentLevel;
-            questionCountDisplay.textContent = totalAttemptsInLevel;
-            currentScoreSpan.textContent = `${correctAnswersInLevel}/${totalAttemptsInLevel}`;
-            currentFailsSpan.textContent = failsInLevel;
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            if (currentPlayer) {
+                displayPlayerNameSpan.textContent = currentPlayer.name;
+                currentLevelDisplay.textContent = currentPlayer.currentLevel;
+                questionCountDisplay.textContent = currentPlayer.totalAttemptsInLevel; // Mostrar intentos actuales en el nivel
+                questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL;
+                currentScoreSpan.textContent = `${currentPlayer.correctAnswersInLevel}/${currentPlayer.totalAttemptsInLevel}`;
+                currentFailsSpan.textContent = currentPlayer.failsInLevel;
+                totalTimeDisplay.textContent = formatTime(currentPlayer.totalTimeSeconds);
+            } else {
+                // Caso inicial sin jugador o al reiniciar
+                displayPlayerNameSpan.textContent = '';
+                currentLevelDisplay.textContent = '1';
+                questionCountDisplay.textContent = '0';
+                questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL;
+                currentScoreSpan.textContent = '0/0';
+                currentFailsSpan.textContent = '0';
+                totalTimeDisplay.textContent = formatTime(0);
+            }
+        }
+
+        function updatePlayersScoreboard() {
+            scoreboardList.innerHTML = ''; // Limpiar la lista
+            allPlayers.forEach((player, index) => {
+                const playerEntry = document.createElement('div');
+                playerEntry.classList.add('player-score-entry');
+                if (index === currentPlayerIndex) {
+                    playerEntry.classList.add('current-player');
+                }
+
+                playerEntry.innerHTML = `
+                    <span class="player-name">${player.name}:</span> 
+                    <span class="player-progress">Nivel ${player.currentLevel} - ${player.correctAnswersInLevel}/${QUESTIONS_PER_LEVEL}</span>
+                `;
+                scoreboardList.appendChild(playerEntry);
+            });
         }
 
         // --- Game Logic ---
@@ -574,7 +778,11 @@
             answerInput.readOnly = false;
             answerInput.focus();
 
-            switch (currentLevel) {
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            const level = currentPlayer.currentLevel;
+
+            // Lógica de dificultad por nivel
+            switch (level) {
                 case 1: // Sumas y Restas hasta 20
                     if (Math.random() < 0.6) { // Sumas
                         num1 = Math.floor(Math.random() * 10) + 5;
@@ -736,33 +944,74 @@
                 case 9: // Operaciones combinadas. Fracciones simples.
                     if (Math.random() < 0.6) { // Operaciones combinadas (ej. 5 * 8 + 3)
                         const ops = ['+', '-', '×', '÷'];
-                        let op1 = ops[Math.floor(Math.random() * ops.length)];
-                        let op2 = ops[Math.floor(Math.random() * (ops.length -1 ))];
+                        let op1, op2;
                         let n1, n2, n3;
-
-                        // Asegurarse de que las divisiones sean exactas y los resultados positivos
-                        do {
+                        let validProblem = false;
+                        let attempts = 0;
+                        
+                        // Generar problemas hasta que sean válidos (sin decimales ni negativos intermedios)
+                        while (!validProblem && attempts < 100) {
+                            op1 = ops[Math.floor(Math.random() * ops.length)];
+                            op2 = ops[Math.floor(Math.random() * ops.length)];
                             n1 = Math.floor(Math.random() * 10) + 2;
                             n2 = Math.floor(Math.random() * 10) + 2;
                             n3 = Math.floor(Math.random() * 10) + 2;
-                            
-                            let expression = `${n1} ${op1} ${n2} ${op2} ${n3}`;
-                            try {
-                                correctAnswer = eval(expression.replace('×', '*').replace('÷', '/'));
-                            } catch (e) {
-                                correctAnswer = NaN;
-                            }
-                        } while (!Number.isInteger(correctAnswer) || correctAnswer < 0 || totalAttemptsInLevel > 100);
 
-                        operation = `${op1} ${op2}`; // Simplemente para mostrar en la pregunta
-                        mathQuestionDiv.textContent = `${n1} ${op1} ${n2} ${op2} ${n3} = ?`;
+                            let tempResult1, tempResult2;
+                            let expression = `${n1} ${op1} ${n2} ${op2} ${n3}`; // Representación para eval
+
+                            // Pre-evaluar con orden de operaciones (multiplicación/división primero)
+                            let evaluableExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
+                            
+                            try {
+                                // Simple parser para orden de operaciones
+                                if (op1 === '×' || op1 === '÷') {
+                                    tempResult1 = eval(`${n1} ${op1} ${n2}`);
+                                    if (!Number.isInteger(tempResult1) || tempResult1 < 0) { validProblem = false; attempts++; continue; }
+                                    tempResult2 = eval(`${tempResult1} ${op2} ${n3}`);
+                                } else if (op2 === '×' || op2 === '÷') {
+                                    tempResult1 = eval(`${n2} ${op2} ${n3}`);
+                                    if (!Number.isInteger(tempResult1) || tempResult1 < 0) { validProblem = false; attempts++; continue; }
+                                    tempResult2 = eval(`${n1} ${op1} ${tempResult1}`);
+                                } else { // Solo sumas/restas
+                                    tempResult1 = eval(`${n1} ${op1} ${n2}`);
+                                    if (tempResult1 < 0) { validProblem = false; attempts++; continue; }
+                                    tempResult2 = eval(`${tempResult1} ${op2} ${n3}`);
+                                }
+
+                                if (Number.isInteger(tempResult2) && tempResult2 >= 0) {
+                                    correctAnswer = tempResult2;
+                                    validProblem = true;
+                                }
+                            } catch (e) {
+                                validProblem = false; // Error en la evaluación, intentar de nuevo
+                            }
+                            attempts++;
+                        }
+                        
+                        if (!validProblem) { // Si después de 100 intentos no se encuentra, retrocede a un tipo de problema más simple
+                            console.warn("No se pudo generar un problema combinado válido después de 100 intentos. Generando una multiplicación simple.");
+                            num1 = Math.floor(Math.random() * 9) + 2;
+                            num2 = Math.floor(Math.random() * 9) + 2;
+                            operation = '×';
+                            correctAnswer = num1 * num2;
+                            mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                        } else {
+                            mathQuestionDiv.textContent = `${n1} ${op1} ${n2} ${op2} ${n3} = ?`;
+                            operation = `${op1} ${op2}`; // Para guardar
+                        }
+
                     } else { // Fracciones simples (ej. 1/2 de 10)
-                        let denominator = [2, 3, 4, 5, 10][Math.floor(Math.random() * 5)];
-                        num2 = (Math.floor(Math.random() * 10) + 2) * denominator; // Asegurar que sea divisible
-                        num1 = 1; // Numerador fijo por simplicidad
-                        operation = `/${denominator} de`;
-                        mathQuestionDiv.textContent = `${num1}/${denominator} de ${num2} = ?`;
-                        correctAnswer = num2 / denominator;
+                        let denominatorOptions = [2, 3, 4, 5, 10];
+                        let numerator = 1;
+                        let denominator = denominatorOptions[Math.floor(Math.random() * denominatorOptions.length)];
+                        
+                        // Asegurar que num2 sea un múltiplo del denominador para un resultado exacto
+                        num2 = (Math.floor(Math.random() * 10) + 2) * denominator; 
+                        
+                        operation = `${numerator}/${denominator} de`;
+                        mathQuestionDiv.textContent = `${numerator}/${denominator} de ${num2} = ?`;
+                        correctAnswer = (num2 / denominator) * numerator;
                     }
                     break;
                 case 10: // Repaso general con números más grandes y todas las operaciones
@@ -792,33 +1041,32 @@
 
                     if (operation === '÷' && remainder !== 0) {
                          mathQuestionDiv.textContent = `${num1} ${operation} ${num2} (solo cociente) = ?`;
-                    } else if (operation === '÷' && remainder === 0) {
-                         mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
                     } else {
-                        mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                         mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
                     }
                     break;
                 default:
+                    // Esto no debería ocurrir si el juego está bien gestionado
                     mathQuestionDiv.textContent = '¡Felicidades, has completado todos los niveles!';
                     checkButton.style.display = 'none';
                     answerInput.readOnly = true;
-                    stopLevelTimer(); // Parar el cronómetro de nivel al finalizar
-                    stopTotalTimer(); // Parar el cronómetro total
+                    stopLevelTimer();
+                    stopTotalTimer();
                     return;
             }
 
-            // Asegurarse de que la pregunta se muestre si no es un caso especial del nivel 9 o 10
-            if (currentLevel < 9 || (currentLevel === 9 && operation.indexOf('de') === -1) || (currentLevel === 10 && operation !== '÷')) {
+            // Si no es un caso especial donde ya se formó la pregunta en el switch
+            if (!mathQuestionDiv.textContent.includes('?')) {
                 mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
-            } else if (currentLevel === 10 && operation === '÷') {
-                // Ya se maneja la visualización de la división con resto en el caso 10
             }
-
+            
             currentProblem = { num1, num2, operation, correctAnswer };
         }
 
         function checkAnswer() {
             const userAnswer = parseFloat(answerInput.value);
+            const currentPlayer = allPlayers[currentPlayerIndex];
+
             if (isNaN(userAnswer)) {
                 resultMessageDiv.textContent = 'Por favor, introduce un número válido.';
                 resultMessageDiv.className = 'result-message incorrect';
@@ -826,49 +1074,83 @@
                 return;
             }
 
-            totalAttemptsInLevel++;
+            currentPlayer.totalAttemptsInLevel++; 
+
             if (userAnswer === currentProblem.correctAnswer) {
                 resultMessageDiv.textContent = '¡Correcto! 🎉';
                 resultMessageDiv.className = 'result-message correct';
-                correctAnswersInLevel++;
+                currentPlayer.correctAnswersInLevel++;
             } else {
                 resultMessageDiv.textContent = `¡Incorrecto! La respuesta correcta era ${currentProblem.correctAnswer}.`;
                 resultMessageDiv.className = 'result-message incorrect';
-                failsInLevel++;
+                currentPlayer.failsInLevel++;
             }
-            updateScoreDisplay();
-            saveGameProgress(); // Guardar progreso después de cada intento
+            updateScoreDisplay(); // Actualiza la UI principal
+            updatePlayersScoreboard(); // Actualiza el marcador lateral
+            saveGameProgress();
 
             decompositionExplanationDiv.style.display = 'none';
 
             answerInput.readOnly = true;
             checkButton.style.display = 'none';
 
-            setTimeout(() => { // Pequeño retraso para que el usuario lea el resultado
-                if (failsInLevel >= MAX_FAILS) {
-                    stopLevelTimer(); // Parar el cronómetro de nivel al fallar
-                    showModal('¡Oh no!', `Has acumulado ${MAX_FAILS} fallos en este nivel. ¡Tienes que reiniciar el Nivel ${currentLevel}!`, () => {
-                        initializeLevel(); // Reinicia el nivel actual
-                        saveGameProgress(); // Guarda el progreso después de reiniciar el nivel
+            setTimeout(() => {
+                if (currentPlayer.failsInLevel >= MAX_FAILS) {
+                    stopLevelTimer();
+                    showModal('¡Oh no!', `${currentPlayer.name}, has acumulado ${MAX_FAILS} fallos en el Nivel ${currentPlayer.currentLevel}. ¡Debes reiniciar tu nivel!`, () => {
+                        // Reiniciar stats del nivel actual para este jugador
+                        currentPlayer.correctAnswersInLevel = 0;
+                        currentPlayer.totalAttemptsInLevel = 0;
+                        currentPlayer.failsInLevel = 0;
+                        saveGameProgress();
+                        initializeLevel(); // El mismo jugador reinicia su nivel
                     });
-                } else if (correctAnswersInLevel >= QUESTIONS_PER_LEVEL) {
-                    stopLevelTimer(); // Parar el cronómetro de nivel al superar
-                    if (currentLevel < MAX_LEVELS) {
-                        showModal('¡Enhorabuena!', `¡Has superado el Nivel ${currentLevel}! Tiempo del nivel: ${formatTime(levelTimeSeconds)}. Adelante al siguiente nivel.`, () => {
-                            currentLevel++;
-                            initializeLevel();
-                            saveGameProgress(); // Guarda el progreso al pasar de nivel
+                } else if (currentPlayer.correctAnswersInLevel >= QUESTIONS_PER_LEVEL) {
+                    stopLevelTimer();
+                    currentPlayer.levelTimes[currentPlayer.currentLevel] = levelTimeSeconds; // Guardar tiempo del nivel
+                    
+                    let modalMsg = `${currentPlayer.name}, ¡has superado el Nivel ${currentPlayer.currentLevel}! Tiempo del nivel: ${formatTime(levelTimeSeconds)}.`;
+                    
+                    currentPlayer.currentLevel++; // Avanzar al siguiente nivel para este jugador
+                    // Reiniciar stats del nivel para el nuevo nivel que va a empezar
+                    currentPlayer.correctAnswersInLevel = 0;
+                    currentPlayer.totalAttemptsInLevel = 0;
+                    currentPlayer.failsInLevel = 0;
+
+
+                    let allPlayersFinishedAllLevels = true;
+                    for (const player of allPlayers) {
+                        if (player.currentLevel <= MAX_LEVELS) {
+                            allPlayersFinishedAllLevels = false;
+                            break;
+                        }
+                    }
+
+                    if (allPlayersFinishedAllLevels) {
+                        stopTotalTimer(); 
+                        let finalMessage = `¡Felicidades a todos! Han completado todos los ${MAX_LEVELS} niveles del juego.\n\nResultados Finales:\n`;
+                        allPlayers.forEach(p => {
+                            let playerLevelTimes = Object.keys(p.levelTimes).map(level => `Nivel ${level}: ${formatTime(p.levelTimes[level])}`).join(', ');
+                            finalMessage += `\n${p.name}:\n  Tiempo Total: ${formatTime(p.totalTimeSeconds)}\n  Tiempos por Nivel: ${playerLevelTimes || 'N/A'}\n`;
+                        });
+                        showModal('¡Juego Terminado!', finalMessage, () => {
+                            resetGame(); 
                         });
                     } else {
-                        stopTotalTimer(); // Parar el cronómetro total al finalizar el juego
-                        showModal('¡Felicidades!', `¡Has completado todos los ${MAX_LEVELS} niveles del juego, ${playerName}! Eres un campeón del cálculo mental.\n Tiempo total del juego: ${formatTime(totalTimeSeconds)}.`, () => {
-                            resetGame(); // Reiniciar el juego al finalizar todos los niveles
+                        // Avanzar al siguiente jugador
+                        currentPlayerIndex = (currentPlayerIndex + 1) % allPlayers.length;
+                        saveGameProgress(); 
+                        
+                        const nextPlayer = allPlayers[currentPlayerIndex];
+                        modalMsg += `\nAhora es el turno de ${nextPlayer.name} para el Nivel ${nextPlayer.currentLevel}.`;
+                        showModal('Nivel Superado', modalMsg, () => {
+                            initializeLevel(); 
                         });
                     }
                 } else {
-                    generateNewProblem(); // Continuar con la siguiente pregunta si no hay fallos máximos ni nivel superado
+                    generateNewProblem(); // Continuar con la siguiente pregunta para el mismo jugador
                 }
-            }, 1500); // 1.5 segundos de espera
+            }, 1500); 
         }
 
         // --- Modal Functions ---
@@ -879,27 +1161,27 @@
                 gameModal.style.display = 'none';
                 onContinue();
             };
-            gameModal.style.display = 'flex'; // Usar flex para centrar contenido
+            gameModal.style.display = 'flex';
         }
 
         function handleModalContinue() {
-            // Esta función es llamada por el click del botón del modal,
-            // la lógica de lo que pasa después del modal se pasa a showModal
+            // La lógica de continuación está en el `onclick` del botón del modal.
         }
 
         // --- Initialization ---
-        // Al cargar la página, comprueba si hay un nombre guardado
         window.onload = () => {
-            const savedProgress = localStorage.getItem('mentalMathGameProgress');
-            if (savedProgress) {
-                const gameProgress = JSON.parse(savedProgress);
-                playerNameInput.value = gameProgress.playerName;
-                startGameButton.click(); // Simula el clic en el botón de empezar juego
+            generatePlayerNameInputs(); // Generar inputs de nombre por defecto (1 jugador)
+            if (loadGameProgress()) {
+                playerSetupDiv.style.display = 'none';
+                gameAreaDiv.style.display = 'block';
+                playersScoreboard.style.display = 'block'; // Mostrar el marcador si se carga partida
+                startTotalTimer(); 
             } else {
-                totalTimeDisplay.textContent = formatTime(0); // Asegura que el tiempo total se vea en 00:00 al inicio
-                levelTimeDisplay.textContent = formatTime(0); // Asegura que el tiempo de nivel se vea en 00:00 al inicio
+                totalTimeDisplay.textContent = formatTime(0);
+                levelTimeDisplay.textContent = formatTime(0);
             }
-            updateScoreDisplay();
+            updateScoreDisplay(); 
+            updatePlayersScoreboard(); // Para que el marcador se vea al inicio, incluso si no hay jugadores
         };
     </script>
 </body>
