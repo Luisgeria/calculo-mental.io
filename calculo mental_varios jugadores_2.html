@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Cálculo Mental</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #e0f7fa; /* Azul claro */
+            margin: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            position: relative; /* Para el marcador fijo */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #00796b;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+        }
+
+        h2 {
+            color: #00796b;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+
+        /* NIVEL Y PREGUNTA - MÁS GRANDE */
+        .level-info {
+            font-size: 1.8em; /* Aumentado */
+            color: #3f51b5;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .player-info {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .player-info span {
+            color: #00796b;
+        }
+
+        .player-setup-controls {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-setup-controls select,
+        .player-setup-controls input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 70%;
+            max-width: 250px;
+        }
+
+        .player-setup-controls button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .player-setup-controls button:hover {
+            background-color: #1976d2;
+        }
+
+        .game-area {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .question {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3f51b5;
+            margin-bottom: 20px;
+            min-height: 1.5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            padding: 12px 20px;
+            font-size: 1.5em;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            width: 150px;
+            transition: border-color 0.3s ease;
+        }
+
+        #answerInput:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        #checkButton {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #checkButton:hover {
+            background-color: #fb8c00;
+            transform: translateY(-2px);
+        }
+
+        .result-message {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 1.5em;
+        }
+
+        .result-message.correct {
+            color: #4CAF50;
+        }
+
+        .result-message.incorrect {
+            color: #f44336;
+        }
+
+        #decompositionExplanation {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #555;
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-left: 5px solid #2196f3;
+            border-radius: 5px;
+            text-align: left;
+            display: none;
+        }
+
+        #decompositionExplanation p {
+            margin: 5px 0;
+        }
+
+        #decompositionExplanation strong {
+            color: #3f51b5;
+        }
+
+        /* PUNTUACIÓN - MÁS GRANDE */
+        .score-display {
+            font-size: 1.6em; /* Aumentado */
+            margin-top: 25px;
+            color: #555;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap; /* Para que se ajusten mejor en pantallas pequeñas */
+        }
+
+        .score-display p {
+            margin: 5px; /* Ajustar margen para flex-wrap */
+        }
+
+        .score-display span {
+            color: #3f51b5;
+        }
+
+        .timer-display {
+            font-size: 1.1em;
+            color: #777;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            max-width: 400px;
+            flex-wrap: wrap;
+        }
+
+        .timer-display p {
+            margin: 5px 0;
+            flex-basis: 48%;
+        }
+
+        .timer-display span {
+            color: #00796b;
+            font-weight: bold;
+        }
+
+        .reset-button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .reset-button:hover {
+            background-color: #c62828;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-content h3 {
+            color: #00796b;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #43a047;
+        }
+
+        /* --- New Player Scoreboard Styles --- */
+        #playersScoreboard {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            text-align: left;
+            z-index: 100; /* Asegurar que esté encima de otros elementos */
+            border: 1px solid #ddd;
+        }
+
+        #playersScoreboard h3 {
+            margin-top: 0;
+            color: #00796b;
+            font-size: 1.2em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .player-score-entry {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #444;
+            display: flex;
+            flex-direction: column; /* Cambiado a columna para mostrar más info */
+            align-items: flex-start;
+            gap: 2px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .player-score-entry.current-player {
+            font-weight: bold;
+            color: #3f51b5;
+            background-color: #e8f5e9; /* Resaltar jugador actual */
+        }
+        
+        .player-score-entry.eliminated-player {
+            text-decoration: line-through;
+            color: #f44336;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+
+        .player-score-entry span {
+            color: #666;
+        }
+        .player-score-entry .player-name {
+            font-size: 1.1em;
+            color: #333; /* Color más oscuro para el nombre */
+        }
+        .player-score-entry.current-player .player-name {
+            color: #3f51b5; /* Resaltar nombre del jugador actual */
+        }
+        .player-score-entry .player-progress {
+            font-size: 0.9em;
+            color: #00796b;
+        }
+        .player-score-entry .player-fails {
+            font-size: 0.8em;
+            color: #d32f2f;
+        }
+        /* End Player Scoreboard Styles */
+
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 25px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            /* Ajustar tamaños en móviles */
+            .level-info {
+                font-size: 1.5em; /* Ajuste para móvil */
+            }
+            .score-display {
+                font-size: 1.3em; /* Ajuste para móvil */
+            }
+            .question {
+                font-size: 2em;
+            }
+            #answerInput {
+                width: 100px;
+                font-size: 1.2em;
+            }
+            #checkButton {
+                padding: 10px 15px;
+                font-size: 1.2em;
+            }
+            .result-message {
+                font-size: 1.3em;
+            }
+            #decompositionExplanation {
+                font-size: 0.9em;
+            }
+            .reset-button {
+                padding: 8px 15px;
+                font-size: 1em;
+            }
+            .timer-display {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .timer-display p {
+                flex-basis: 100%;
+            }
+            #playersScoreboard {
+                position: static; /* Cambiar a estático en móviles */
+                margin-top: 20px;
+                max-width: none;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+                order: -1; /* Ponerlo arriba en el flex container */
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #answerInput {
+                width: 80%;
+                margin: 0 auto;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            .modal-content h3 {
+                font-size: 1.5em;
+            }
+            .modal-content p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego de Cálculo Mental</h1>
+
+        <div id="playerSetup" class="player-setup-controls">
+            <p>Selecciona el número de jugadores:</p>
+            <select id="numPlayersSelect">
+                <option value="1">1 Jugador</option>
+                <option value="2">2 Jugadores</option>
+                <option value="3">3 Jugadores</option>
+                <option value="4">4 Jugadores</option>
+            </select>
+            <div id="playerNamesInputContainer">
+                <input type="text" id="playerNameInput_0" placeholder="Nombre Jugador 1">
+            </div>
+            <button id="startGameButton">Empezar Juego</button>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <p class="player-info">Turno de: <span id="displayPlayerName"></span></p>
+            <p class="level-info">Nivel: <span id="currentLevelDisplay">1</span> / Pregunta: <span id="questionCountDisplay">0</span> de <span id="questionsPerLevelTarget">10</span></p>
+            <div class="timer-display">
+                <p>Tiempo Total: <span id="totalTimeDisplay">00:00</span></p>
+                <p>Tiempo de Nivel: <span id="levelTimeDisplay">00:00</span></p>
+            </div>
+            <p class="question" id="mathQuestion">¡A por ello!</p>
+            <div class="input-group">
+                <input type="number" id="answerInput" placeholder="Tu respuesta">
+                <button id="checkButton">Comprobar</button>
+            </div>
+            <p class="result-message" id="resultMessage"></p>
+            <div id="decompositionExplanation"></div>
+            <div class="score-display">
+                <p>Aciertos: <span id="currentScore">0/0</span></p>
+                <p>Fallos en este nivel: <span id="currentFails">0</span></p>
+                <p>Fallos Totales: <span id="totalFailsDisplay">0</span></p>
+            </div>
+            <button class="reset-button" id="resetGameButton">Reiniciar Juego</button>
+        </div>
+    </div>
+
+    <div id="playersScoreboard">
+        <h3>Puntuaciones</h3>
+        <div id="scoreboardList">
+            </div>
+    </div>
+
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <button id="modalButton">Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        const MAX_LEVELS = 10;
+        const QUESTIONS_PER_LEVEL = 10;
+        const MAX_FAILS_IN_LEVEL = 3; // Fallos permitidos por nivel
+        const MAX_TOTAL_FAILS = 6;    // Fallos totales permitidos en todo el juego (2 niveles x 3 fallos/nivel)
+
+        // --- Multi-Player Variables ---
+        let allPlayers = []; // Array de objetos de jugador
+        let currentPlayerIndex = 0; // Índice del jugador actual en allPlayers
+        let currentProblem; // Almacena la pregunta actual
+
+        let levelTimeSeconds = 0; // Tiempo para el nivel actual del jugador actual
+        let totalTimerInterval; // Intervalo para el cronómetro total (del jugador actual)
+        let levelTimerInterval; // Intervalo para el cronómetro del nivel (del jugador actual)
+
+        // --- DOM Elements ---
+        const playerSetupDiv = document.getElementById('playerSetup');
+        const numPlayersSelect = document.getElementById('numPlayersSelect');
+        const playerNamesInputContainer = document.getElementById('playerNamesInputContainer');
+        const startGameButton = document.getElementById('startGameButton');
+        const gameAreaDiv = document.getElementById('gameArea');
+        const displayPlayerNameSpan = document.getElementById('displayPlayerName');
+        const currentLevelDisplay = document.getElementById('currentLevelDisplay');
+        const questionCountDisplay = document.getElementById('questionCountDisplay');
+        const questionsPerLevelTarget = document.getElementById('questionsPerLevelTarget');
+        const totalTimeDisplay = document.getElementById('totalTimeDisplay');
+        const levelTimeDisplay = document.getElementById('levelTimeDisplay');
+        const mathQuestionDiv = document.getElementById('mathQuestion');
+        const answerInput = document.getElementById('answerInput');
+        const checkButton = document.getElementById('checkButton');
+        const resultMessageDiv = document.getElementById('resultMessage');
+        const decompositionExplanationDiv = document.getElementById('decompositionExplanation');
+        const currentScoreSpan = document.getElementById('currentScore');
+        const currentFailsSpan = document.getElementById('currentFails');
+        const totalFailsDisplay = document.getElementById('totalFailsDisplay'); // Nuevo para fallos totales
+        const resetGameButton = document.getElementById('resetGameButton');
+        const gameModal = document.getElementById('gameModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButton = document.getElementById('modalButton');
+
+        // Nuevo marcador de jugadores
+        const playersScoreboard = document.getElementById('playersScoreboard');
+        const scoreboardList = document.getElementById('scoreboardList');
+
+
+        // --- Event Listeners ---
+        numPlayersSelect.addEventListener('change', generatePlayerNameInputs);
+        startGameButton.addEventListener('click', startGame);
+        checkButton.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        modalButton.addEventListener('click', handleModalContinue);
+        resetGameButton.addEventListener('click', resetGame);
+
+        // --- Player Setup ---
+        function generatePlayerNameInputs() {
+            const numPlayers = parseInt(numPlayersSelect.value);
+            playerNamesInputContainer.innerHTML = '';
+            for (let i = 0; i < numPlayers; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `playerNameInput_${i}`;
+                input.placeholder = `Nombre Jugador ${i + 1}`;
+                input.value = `Jugador ${i + 1}`; // Valor por defecto
+                playerNamesInputContainer.appendChild(input);
+            }
+        }
+
+        function startGame() {
+            const numPlayers = parseInt(numPlayersSelect.value);
+            allPlayers = [];
+            for (let i = 0; i < numPlayers; i++) {
+                const nameInput = document.getElementById(`playerNameInput_${i}`);
+                const playerName = nameInput.value.trim();
+                if (!playerName) {
+                    alert(`Por favor, introduce el nombre del Jugador ${i + 1}.`);
+                    return;
+                }
+                allPlayers.push({
+                    name: playerName,
+                    currentLevel: 1,
+                    correctAnswersInLevel: 0,
+                    failsInLevel: 0, // Fallos en el nivel actual
+                    totalFails: 0,   // Fallos totales acumulados por el jugador
+                    totalTimeSeconds: 0,
+                    levelTimes: {}, // Almacena el tiempo que le llevó cada nivel
+                    isEliminated: false // Nuevo: para saber si un jugador ha sido eliminado
+                });
+            }
+
+            currentPlayerIndex = 0; // Siempre empezar con el primer jugador
+            playerSetupDiv.style.display = 'none';
+            gameAreaDiv.style.display = 'block';
+            playersScoreboard.style.display = 'block';
+            
+            // Cargar progreso si existe, de lo contrario, inicializar para el primer jugador
+            if (!loadGameProgress()) { 
+                // Iniciar el juego para el primer jugador válido
+                moveToNextActivePlayer(); // Buscará el primer jugador no eliminado
+            }
+            startTotalTimer(); 
+            updatePlayersScoreboard(); // Actualizar el marcador inicial
+        }
+
+        // --- Timer Functions ---
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            const paddedMinutes = String(minutes).padStart(2, '0');
+            const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+            return `${paddedMinutes}:${paddedSeconds}`;
+        }
+
+        function startTotalTimer() {
+            if (totalTimerInterval) clearInterval(totalTimerInterval);
+            totalTimerInterval = setInterval(() => {
+                const currentPlayer = allPlayers[currentPlayerIndex];
+                if (currentPlayer && !currentPlayer.isEliminated) {
+                    currentPlayer.totalTimeSeconds++;
+                    totalTimeDisplay.textContent = formatTime(currentPlayer.totalTimeSeconds);
+                    saveGameProgress(); 
+                }
+            }, 1000);
+        }
+
+        function stopTotalTimer() {
+            clearInterval(totalTimerInterval);
+        }
+
+        function startLevelTimer() {
+            levelTimeSeconds = 0; // Reiniciar el tiempo del nivel para el jugador actual
+            levelTimeDisplay.textContent = formatTime(levelTimeSeconds);
+            if (levelTimerInterval) clearInterval(levelTimerInterval);
+            levelTimerInterval = setInterval(() => {
+                levelTimeSeconds++;
+                levelTimeDisplay.textContent = formatTime(levelTimeSeconds);
+            }, 1000);
+        }
+
+        function stopLevelTimer() {
+            clearInterval(levelTimerInterval);
+        }
+
+
+        // --- Game State Management ---
+
+        function saveGameProgress() {
+            const gameProgress = {
+                allPlayers: allPlayers,
+                currentPlayerIndex: currentPlayerIndex
+            };
+            localStorage.setItem('mentalMathGameMultiPlayerProgress', JSON.stringify(gameProgress));
+        }
+
+        function loadGameProgress() {
+            const savedProgress = localStorage.getItem('mentalMathGameMultiPlayerProgress');
+            if (savedProgress) {
+                const gameProgress = JSON.parse(savedProgress);
+                allPlayers = gameProgress.allPlayers;
+                currentPlayerIndex = gameProgress.currentPlayerIndex;
+
+                allPlayers.forEach(player => {
+                    if (typeof player.totalTimeSeconds === 'undefined') player.totalTimeSeconds = 0;
+                    if (typeof player.levelTimes === 'undefined') player.levelTimes = {};
+                    if (typeof player.correctAnswersInLevel === 'undefined') player.correctAnswersInLevel = 0;
+                    if (typeof player.failsInLevel === 'undefined') player.failsInLevel = 0;
+                    if (typeof player.totalFails === 'undefined') player.totalFails = 0; // Asegurarse de cargar
+                    if (typeof player.currentLevel === 'undefined') player.currentLevel = 1;
+                    if (typeof player.isEliminated === 'undefined') player.isEliminated = false; // Asegurarse de cargar
+                });
+
+                // Si el jugador actual está eliminado, buscar el siguiente activo.
+                if (allPlayers[currentPlayerIndex] && allPlayers[currentPlayerIndex].isEliminated) {
+                    moveToNextActivePlayer(true); // Buscar desde el inicio si el actual está eliminado
+                } else {
+                    initializeLevel(true); // Iniciar normalmente si el actual no está eliminado
+                }
+                return true; 
+            }
+            return false;
+        }
+
+        function resetGame() {
+            if (confirm('¿Estás seguro de que quieres reiniciar el juego? Se perderá todo tu progreso de todos los jugadores.')) {
+                localStorage.removeItem('mentalMathGameMultiPlayerProgress');
+                allPlayers = [];
+                currentPlayerIndex = 0;
+                levelTimeSeconds = 0;
+                stopTotalTimer();
+                stopLevelTimer();
+                totalTimeDisplay.textContent = formatTime(0);
+                levelTimeDisplay.textContent = formatTime(0);
+
+                playerSetupDiv.style.display = 'block';
+                gameAreaDiv.style.display = 'none';
+                playersScoreboard.style.display = 'none'; 
+                generatePlayerNameInputs(); 
+                
+                updateScoreDisplay(); 
+                mathQuestionDiv.textContent = '¡A por ello!';
+                resultMessageDiv.textContent = '';
+                decompositionExplanationDiv.style.display = 'none';
+                answerInput.value = '';
+                answerInput.readOnly = false;
+                checkButton.style.display = 'inline-block';
+            }
+        }
+
+        function initializeLevel(isInitialLoad = false) {
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            if (!currentPlayer || currentPlayer.isEliminated) {
+                // Si el jugador actual no es válido o está eliminado, buscar el siguiente
+                moveToNextActivePlayer();
+                return; // La función moveToNextActivePlayer llamará a initializeLevel si encuentra uno
+            }
+
+            displayPlayerNameSpan.textContent = currentPlayer.name;
+            currentLevelDisplay.textContent = currentPlayer.currentLevel;
+            questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL; 
+            
+            updateScoreDisplay();
+            
+            if (!isInitialLoad) {
+                startLevelTimer(); 
+            } else { 
+                levelTimeSeconds = 0;
+                levelTimeDisplay.textContent = formatTime(0);
+                startLevelTimer(); 
+            }
+            
+            generateNewProblem();
+            updatePlayersScoreboard();
+        }
+
+        function updateScoreDisplay() {
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            if (currentPlayer && !currentPlayer.isEliminated) {
+                displayPlayerNameSpan.textContent = currentPlayer.name;
+                currentLevelDisplay.textContent = currentPlayer.currentLevel;
+                questionCountDisplay.textContent = currentPlayer.correctAnswersInLevel;
+                questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL;
+                currentScoreSpan.textContent = `${currentPlayer.correctAnswersInLevel}/${QUESTIONS_PER_LEVEL}`;
+                currentFailsSpan.textContent = currentPlayer.failsInLevel;
+                totalFailsDisplay.textContent = currentPlayer.totalFails; // Mostrar fallos totales
+                totalTimeDisplay.textContent = formatTime(currentPlayer.totalTimeSeconds);
+            } else {
+                displayPlayerNameSpan.textContent = 'N/A';
+                currentLevelDisplay.textContent = 'N/A';
+                questionCountDisplay.textContent = '0';
+                questionsPerLevelTarget.textContent = QUESTIONS_PER_LEVEL;
+                currentScoreSpan.textContent = '0/0';
+                currentFailsSpan.textContent = '0';
+                totalFailsDisplay.textContent = '0';
+                totalTimeDisplay.textContent = formatTime(0);
+                // Si no hay jugador activo o está eliminado, ocultar el área de juego
+                // Esto podría hacerse aquí o manejarse mejor al cambiar de jugador
+            }
+        }
+
+        function updatePlayersScoreboard() {
+            scoreboardList.innerHTML = ''; 
+            allPlayers.forEach((player, index) => {
+                const playerEntry = document.createElement('div');
+                playerEntry.classList.add('player-score-entry');
+                if (index === currentPlayerIndex && !player.isEliminated) {
+                    playerEntry.classList.add('current-player');
+                }
+                if (player.isEliminated) {
+                    playerEntry.classList.add('eliminated-player');
+                }
+
+                playerEntry.innerHTML = `
+                    <span class="player-name">${player.name}:</span> 
+                    <span class="player-progress">${player.isEliminated ? 'Eliminado' : `Nivel ${player.currentLevel} - ${player.correctAnswersInLevel}/${QUESTIONS_PER_LEVEL}`}</span>
+                    <span class="player-fails">Fallos: ${player.totalFails}/${MAX_TOTAL_FAILS}</span>
+                `;
+                scoreboardList.appendChild(playerEntry);
+            });
+        }
+
+        // --- Game Logic ---
+
+        function generateNewProblem() {
+            const currentPlayer = allPlayers[currentPlayerIndex];
+            if (currentPlayer.isEliminated) {
+                // Si el jugador actual ya está eliminado, no generamos un problema.
+                // Esto es una salvaguarda, `moveToNextActivePlayer` debería haberlo manejado.
+                return;
+            }
+
+            let num1, num2, operation, correctAnswer;
+            let questionText = ''; 
+
+            resultMessageDiv.textContent = '';
+            decompositionExplanationDiv.style.display = 'none';
+            answerInput.value = '';
+            checkButton.style.display = 'inline-block';
+            answerInput.readOnly = false;
+            answerInput.focus();
+
+            const level = currentPlayer.currentLevel;
+
+            // Lógica de dificultad por nivel
+            switch (level) {
+                case 1: // Sumas y Restas hasta 20
+                    if (Math.random() < 0.6) { // Sumas
+                        num1 = Math.floor(Math.random() * 10) + 5;
+                        num2 = Math.floor(Math.random() * 8) + 2;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else { // Restas
+                        num1 = Math.floor(Math.random() * 10) + 10;
+                        num2 = Math.floor(Math.random() * (num1 - 4)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 2: // Sumas y Restas hasta 50, introducción a tablas (2, 5, 10)
+                    if (Math.random() < 0.4) { // Sumas
+                        num1 = Math.floor(Math.random() * 30) + 15;
+                        num2 = Math.floor(Math.random() * 20) + 5;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else if (Math.random() < 0.8) { // Restas
+                        num1 = Math.floor(Math.random() * 30) + 25;
+                        num2 = Math.floor(Math.random() * 15) + 5;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 10)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    } else { // Multiplicaciones simples (tabla del 2, 5, 10)
+                        const tables = [2, 5, 10];
+                        num1 = tables[Math.floor(Math.random() * tables.length)];
+                        num2 = Math.floor(Math.random() * 9) + 2;
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 3: // Sumas y Restas hasta 100 con acarreo/préstamo. Multiplicaciones (3, 4)
+                    if (Math.random() < 0.4) { // Sumas
+                        num1 = Math.floor(Math.random() * 70) + 30;
+                        num2 = Math.floor(Math.random() * 50) + 10;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else if (Math.random() < 0.8) { // Restas
+                        num1 = Math.floor(Math.random() * 70) + 50;
+                        num2 = Math.floor(Math.random() * 30) + 10;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 20)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    } else { // Multiplicaciones (3, 4)
+                        const tables = [3, 4];
+                        num1 = tables[Math.floor(Math.random() * tables.length)];
+                        num2 = Math.floor(Math.random() * 9) + 2;
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 4: // Sumas y Restas hasta 200. Multiplicaciones (6, 7). Div. exactas simples.
+                    if (Math.random() < 0.3) { // Sumas
+                        num1 = Math.floor(Math.random() * 100) + 50;
+                        num2 = Math.floor(Math.random() * 80) + 20;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else if (Math.random() < 0.6) { // Restas
+                        num1 = Math.floor(Math.random() * 100) + 100;
+                        num2 = Math.floor(Math.random() * 70) + 30;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 50)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    } else if (Math.random() < 0.8) { // Multiplicaciones (6, 7)
+                        const tables = [6, 7];
+                        num1 = tables[Math.floor(Math.random() * tables.length)];
+                        num2 = Math.floor(Math.random() * 9) + 2;
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                    } else { // Divisiones exactas
+                        num2 = Math.floor(Math.random() * 6) + 2; // Divisor 2-7
+                        correctAnswer = Math.floor(Math.random() * 15) + 5; // Cociente 5-19
+                        num1 = num2 * correctAnswer;
+                        operation = '÷';
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 5: // Sumas y Restas hasta 1000. Multiplicaciones (8, 9).
+                    if (Math.random() < 0.35) { // Sumas
+                        num1 = Math.floor(Math.random() * 500) + 100;
+                        num2 = Math.floor(Math.random() * 300) + 50;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else if (Math.random() < 0.7) { // Restas
+                        num1 = Math.floor(Math.random() * 500) + 300;
+                        num2 = Math.floor(Math.random() * 200) + 50;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 100)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    } else { // Multiplicaciones (8, 9)
+                        const tables = [8, 9];
+                        num1 = tables[Math.floor(Math.random() * tables.length)];
+                        num2 = Math.floor(Math.random() * 9) + 2;
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 6: // Multiplicaciones 1 dígito por 2/3 dígitos. Divisiones con resto.
+                    if (Math.random() < 0.6) { // Multiplicaciones 1x2/3 digitos
+                        num1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        num2 = Math.floor(Math.random() * 200) + 20; // 20-219
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        questionText = `${num1} ${operation} ${num2} = ?`;
+                    } else { // Divisiones con resto (solo cociente entero)
+                        num2 = Math.floor(Math.random() * 8) + 2; // Divisor 2-9
+                        let quotient = Math.floor(Math.random() * 30) + 10; // Cociente 10-39
+                        let remainder = Math.floor(Math.random() * num2); // Resto 0 a num2-1
+                        num1 = num2 * quotient + remainder;
+                        operation = '÷';
+                        correctAnswer = quotient; // Se espera el cociente entero
+                        questionText = `${num1} ${operation} ${num2} (solo cociente) = ?`;
+                    }
+                    break;
+                case 7: // Sumas/Restas hasta 10,000. Multiplicaciones 2x2 dig.
+                    if (Math.random() < 0.4) { // Sumas
+                        num1 = Math.floor(Math.random() * 4000) + 1000;
+                        num2 = Math.floor(Math.random() * 3000) + 500;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                    } else if (Math.random() < 0.8) { // Restas
+                        num1 = Math.floor(Math.random() * 5000) + 4000;
+                        num2 = Math.floor(Math.random() * 2000) + 500;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 1500)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                    } else { // Multiplicaciones 2x2 digitos (ej. 23 * 45)
+                        num1 = Math.floor(Math.random() * 70) + 10; // 10-79
+                        num2 = Math.floor(Math.random() * 70) + 10; // 10-79
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                case 8: // Multiplicaciones 3x2 digitos. Decimales simples (x10, /10, x2, /2)
+                    if (Math.random() < 0.5) { // Multiplicaciones 3x2 digitos
+                        num1 = Math.floor(Math.random() * 400) + 100; // 100-499
+                        num2 = Math.floor(Math.random() * 40) + 10; // 10-49
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        questionText = `${num1} ${operation} ${num2} = ?`;
+                    } else { // Decimales simples (multiplicar/dividir por 10, 2)
+                        const decOps = Math.random();
+                        if (decOps < 0.5) { // x10, /10
+                            num1 = (Math.floor(Math.random() * 99) + 1) * 0.1; // 0.1 - 9.9
+                            operation = (Math.random() < 0.5) ? '×' : '÷';
+                            num2 = 10;
+                            correctAnswer = (operation === '×') ? parseFloat((num1 * num2).toFixed(2)) : parseFloat((num1 / num2).toFixed(2));
+                            questionText = `${num1} ${operation} ${num2} = ?`;
+                        } else { // x2, /2
+                            num1 = (Math.floor(Math.random() * 50) + 1) * 0.1; // 0.1 - 5.0
+                            operation = (Math.random() < 0.5) ? '×' : '÷';
+                            num2 = 2;
+                            // Asegurarse de que la división no de un montón de decimales
+                            if (operation === '÷' && num1 % 0.2 !== 0) {
+                                num1 = parseFloat((Math.floor(num1 * 10) / 10).toFixed(1)); // Redondear a un decimal
+                                if (num1 * 10 % 2 !== 0) { // Si el decimal es impar (ej. 0.1, 0.3)
+                                    if (num1 < 10) num1 = parseFloat((num1 + 0.1).toFixed(1)); // Intenta hacerlo par
+                                    else num1 = parseFloat((Math.floor(num1 * 10 / 2) * 2) / 10).toFixed(1);
+                                }
+                                if (num1 === 0) num1 = 0.2; // Evitar división por 0 o resultados muy pequeños
+                            }
+                            correctAnswer = (operation === '×') ? parseFloat((num1 * num2).toFixed(2)) : parseFloat((num1 / num2).toFixed(2));
+                            questionText = `${num1} ${operation} ${num2} = ?`;
+                        }
+                    }
+                    break;
+                case 9: // Operaciones combinadas (sin paréntesis por ahora) y Fracciones simples.
+                    if (Math.random() < 0.6) { // Operaciones combinadas (ej. 5 * 8 + 3)
+                        let n1, n2, n3;
+                        let op1, op2;
+                        let expressionString;
+                        let result;
+                        let attempts = 0;
+                        const simpleOps = ['+', '-', '×']; 
+                        
+                        while(attempts < 100) {
+                            n1 = Math.floor(Math.random() * 15) + 2;
+                            n2 = Math.floor(Math.random() * 10) + 2;
+                            n3 = Math.floor(Math.random() * 10) + 2;
+                            op1 = simpleOps[Math.floor(Math.random() * simpleOps.length)];
+                            op2 = simpleOps[Math.floor(Math.random() * simpleOps.length)];
+
+                            try {
+                                // Evaluar con prioridad (multiplicación antes que suma/resta)
+                                if (op1 === '×') {
+                                    result = n1 * n2;
+                                    if (op2 === '+') result = result + n3;
+                                    else if (op2 === '-') result = result - n3;
+                                    expressionString = `${n1} ${op1} ${n2} ${op2} ${n3}`;
+                                } else if (op2 === '×') {
+                                    result = n2 * n3;
+                                    if (op1 === '+') result = n1 + result;
+                                    else if (op1 === '-') result = n1 - result;
+                                    expressionString = `${n1} ${op1} ${n2} ${op2} ${n3}`; // Mostrar sin paréntesis
+                                } else { // Solo sumas y restas
+                                    result = eval(`${n1} ${op1} ${n2}`);
+                                    if (op2 === '+') result += n3;
+                                    else result -= n3;
+                                    expressionString = `${n1} ${op1} ${n2} ${op2} ${n3}`;
+                                }
+
+                                if (Number.isInteger(result) && result >= 0 && result < 500) { 
+                                    correctAnswer = result;
+                                    questionText = expressionString.replace(/\*/g, '×'); 
+                                    break;
+                                }
+                            } catch (e) {
+                                // En caso de un eval problemático, solo registrar y reintentar
+                                console.warn("Error evaluating combined operation:", e);
+                            }
+                            attempts++;
+                        }
+
+                        if (attempts === 100) { // Fallback si no se puede generar un problema complejo
+                            num1 = Math.floor(Math.random() * 50) + 10;
+                            num2 = Math.floor(Math.random() * 40) + 5;
+                            operation = Math.random() < 0.5 ? '+' : '-';
+                            correctAnswer = (operation === '+') ? (num1 + num2) : (num1 - num2);
+                            questionText = `${num1} ${operation} ${num2} = ?`;
+                        }
+
+                    } else { // Fracciones simples (ej. 1/2 de 10)
+                        let denominatorOptions = [2, 3, 4, 5, 10];
+                        let numerator = 1; 
+                        let denominator = denominatorOptions[Math.floor(Math.random() * denominatorOptions.length)];
+                        
+                        num2 = (Math.floor(Math.random() * 15) + 2) * denominator; 
+                        
+                        questionText = `${numerator}/${denominator} de ${num2} = ?`;
+                        correctAnswer = (num2 / denominator) * numerator;
+                    }
+                    break;
+                case 10: // Repaso general con números más grandes y todas las operaciones
+                    const finalOps = ['+', '-', '×', '÷'];
+                    operation = finalOps[Math.floor(Math.random() * finalOps.length)];
+
+                    if (operation === '+') {
+                        num1 = Math.floor(Math.random() * 50000) + 10000;
+                        num2 = Math.floor(Math.random() * 20000) + 5000;
+                        correctAnswer = num1 + num2;
+                    } else if (operation === '-') {
+                        num1 = Math.floor(Math.random() * 70000) + 20000;
+                        num2 = Math.floor(Math.random() * 30000) + 10000;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 15000)) + 1;
+                        correctAnswer = num1 - num2;
+                    } else { // Multiplicaciones 2x2 digitos
+                        num1 = Math.floor(Math.random() * 100) + 10; 
+                        num2 = Math.floor(Math.random() * 100) + 10; 
+                        correctAnswer = num1 * num2;
+                    }
+                    questionText = `${num1} ${operation} ${num2} = ?`;
+                    break;
+                default:
+                    questionText = '¡Felicidades, has completado todos los niveles!';
+                    checkButton.style.display = 'none';
+                    answerInput.readOnly = true;
+                    stopLevelTimer();
+                    stopTotalTimer();
+                    currentProblem = null; 
+                    return;
+            }
+            
+            mathQuestionDiv.textContent = questionText;
+            currentProblem = { num1, num2, operation, correctAnswer };
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseFloat(answerInput.value);
+            const currentPlayer = allPlayers[currentPlayerIndex];
+
+            if (isNaN(userAnswer)) {
+                resultMessageDiv.textContent = 'Por favor, introduce un número válido.';
+                resultMessageDiv.className = 'result-message incorrect';
+                decompositionExplanationDiv.style.display = 'none';
+                return;
+            }
+
+            if (userAnswer === currentProblem.correctAnswer) {
+                resultMessageDiv.textContent = '¡Correcto! 🎉';
+                resultMessageDiv.className = 'result-message correct';
+                currentPlayer.correctAnswersInLevel++;
+            } else {
+                resultMessageDiv.textContent = `¡Incorrecto! La respuesta correcta era ${currentProblem.correctAnswer}.`;
+                resultMessageDiv.className = 'result-message incorrect';
+                currentPlayer.failsInLevel++;
+                currentPlayer.totalFails++; // Incrementar fallos totales
+            }
+            updateScoreDisplay(); 
+            updatePlayersScoreboard(); 
+            saveGameProgress();
+
+            decompositionExplanationDiv.style.display = 'none';
+
+            answerInput.readOnly = true;
+            checkButton.style.display = 'none';
+
+            setTimeout(() => {
+                if (currentPlayer.totalFails >= MAX_TOTAL_FAILS) {
+                    stopLevelTimer();
+                    currentPlayer.isEliminated = true; // Marcar al jugador como eliminado
+                    saveGameProgress();
+                    updatePlayersScoreboard(); // Actualizar el marcador para mostrar el estado de eliminado
+
+                    let message = `${currentPlayer.name}, has acumulado ${MAX_TOTAL_FAILS} fallos en total. ¡Tu juego ha terminado!`;
+                    showModal('Juego Terminado para Ti', message, () => {
+                        // Buscar el siguiente jugador activo o finalizar el juego si no hay más
+                        moveToNextActivePlayer();
+                    });
+                } else if (currentPlayer.failsInLevel >= MAX_FAILS_IN_LEVEL) {
+                    stopLevelTimer();
+                    showModal('¡Oh no!', `${currentPlayer.name}, has acumulado ${MAX_FAILS_IN_LEVEL} fallos en el Nivel ${currentPlayer.currentLevel}. ¡Debes reiniciar tu nivel!`, () => {
+                        // Reiniciar stats del nivel actual para este jugador
+                        currentPlayer.correctAnswersInLevel = 0;
+                        currentPlayer.failsInLevel = 0;
+                        saveGameProgress();
+                        initializeLevel(); // El mismo jugador reinicia su nivel
+                    });
+                } else if (currentPlayer.correctAnswersInLevel >= QUESTIONS_PER_LEVEL) {
+                    stopLevelTimer();
+                    currentPlayer.levelTimes[currentPlayer.currentLevel] = levelTimeSeconds; 
+                    
+                    let modalMsg = `${currentPlayer.name}, ¡has superado el Nivel ${currentPlayer.currentLevel}! Tiempo del nivel: ${formatTime(levelTimeSeconds)}.`;
+                    
+                    // Solo avanzar de nivel si no ha alcanzado el MAX_LEVELS
+                    if (currentPlayer.currentLevel < MAX_LEVELS) {
+                        currentPlayer.currentLevel++; 
+                    } 
+                    // Reiniciar stats del nivel para el nuevo nivel o si ya terminó
+                    currentPlayer.correctAnswersInLevel = 0;
+                    currentPlayer.failsInLevel = 0;
+                    saveGameProgress(); // Guardar el progreso del jugador antes de pasar de turno
+
+                    // Buscar el siguiente jugador activo
+                    moveToNextActivePlayer();
+                } else {
+                    generateNewProblem(); // Continuar con la siguiente pregunta para el mismo jugador
+                }
+            }, 1500); 
+        }
+
+        // --- Multi-Player Turn Management ---
+        function moveToNextActivePlayer(fromStart = false) {
+            stopLevelTimer(); // Asegurarse de parar el cronómetro del nivel del jugador anterior
+            stopTotalTimer(); // Temporalmente parar el cronómetro total para evitar bugs al cambiar
+
+            let initialIndex = fromStart ? 0 : currentPlayerIndex;
+            let foundNextPlayer = false;
+            let attempts = 0;
+            const numPlayers = allPlayers.length;
+
+            while (attempts < numPlayers) {
+                // Si la llamada no es desde el inicio, y no es la primera iteración,
+                // avanzamos al siguiente jugador.
+                if (!fromStart || (fromStart && attempts > 0)) {
+                    currentPlayerIndex = (currentPlayerIndex + 1) % numPlayers;
+                } else { // Si es la primera iteración y fromStart es true, se mantiene el currentPlayerIndex actual.
+                    // Esto es útil si el jugador actual es el que acaba de terminar su turno
+                    // y necesitamos buscar el siguiente activo.
+                }
+
+                const nextPlayer = allPlayers[currentPlayerIndex];
+
+                if (nextPlayer && !nextPlayer.isEliminated && nextPlayer.currentLevel <= MAX_LEVELS) {
+                    foundNextPlayer = true;
+                    break;
+                }
+                attempts++;
+                if (fromStart && attempts === numPlayers && !foundNextPlayer) { // Si ya dimos una vuelta completa
+                    currentPlayerIndex = initialIndex; // Volver al índice original para intentar buscar de nuevo desde allí
+                }
+            }
+
+            if (foundNextPlayer) {
+                // Iniciar el turno del nuevo jugador activo
+                initializeLevel();
+                startTotalTimer(); // Reiniciar el cronómetro total para el nuevo jugador
+            } else {
+                // No se encontraron más jugadores activos o todos han terminado/sido eliminados
+                handleGameOver();
+            }
+        }
+
+
+        function handleGameOver() {
+            stopTotalTimer();
+            stopLevelTimer();
+            let allPlayersFinished = true;
+            let finalMessage = "Resultados Finales:\n\n";
+
+            allPlayers.forEach(p => {
+                let playerLevelTimes = Object.keys(p.levelTimes).map(level => `Nivel ${level}: ${formatTime(p.levelTimes[level])}`).join(', ');
+                if (!playerLevelTimes) playerLevelTimes = "N/A"; // Si no hay tiempos de nivel
+                
+                finalMessage += `${p.name}:\n`;
+                if (p.isEliminated) {
+                    finalMessage += `  Estado: ELIMINADO por ${p.totalFails} fallos.\n`;
+                } else if (p.currentLevel > MAX_LEVELS) {
+                    finalMessage += `  Estado: ¡Ha completado todos los niveles!\n`;
+                } else {
+                    allPlayersFinished = false; // Algún jugador no terminó todos los niveles ni fue eliminado
+                    finalMessage += `  Estado: Pendiente (Nivel ${p.currentLevel}, ${p.correctAnswersInLevel}/${QUESTIONS_PER_LEVEL} aciertos, ${p.failsInLevel} fallos en nivel, ${p.totalFails} fallos totales).\n`;
+                }
+                finalMessage += `  Tiempo Total: ${formatTime(p.totalTimeSeconds)}\n`;
+                finalMessage += `  Tiempos por Nivel: ${playerLevelTimes}\n\n`;
+            });
+
+            if (allPlayersFinished) {
+                showModal('¡Juego Terminado!', `¡Todos los jugadores han completado o sido eliminados!\n\n${finalMessage}`, () => {
+                    resetGame();
+                });
+            } else {
+                // Esto podría ocurrir si hay un solo jugador y se elimina, o si el juego
+                // no ha alcanzado un estado final claro para todos.
+                // En este caso, el modal ya lo ha mostrado.
+                // Podríamos ofrecer un reinicio aquí también.
+                 showModal('Juego Pausado / Final Incompleto', `El juego está en un estado donde no hay más jugadores activos para continuar, pero no todos han terminado completamente.\n\n${finalMessage}\n¿Quieres reiniciar el juego?`, () => {
+                    resetGame();
+                });
+            }
+        }
+
+
+        // --- Modal Functions ---
+        function showModal(title, message, onContinue) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalButton.onclick = () => {
+                gameModal.style.display = 'none';
+                onContinue();
+            };
+            gameModal.style.display = 'flex';
+        }
+
+        function handleModalContinue() {
+            // La lógica de continuación está en el `onclick` del botón del modal.
+        }
+
+        // --- Initialization ---
+        window.onload = () => {
+            generatePlayerNameInputs(); 
+            if (loadGameProgress()) {
+                playerSetupDiv.style.display = 'none';
+                gameAreaDiv.style.display = 'block';
+                playersScoreboard.style.display = 'block'; 
+                startTotalTimer(); 
+            } else {
+                totalTimeDisplay.textContent = formatTime(0);
+                levelTimeDisplay.textContent = formatTime(0);
+            }
+            updateScoreDisplay(); 
+            updatePlayersScoreboard(); 
+        };
+    </script>
+</body>
+</html>

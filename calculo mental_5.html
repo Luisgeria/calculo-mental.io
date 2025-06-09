@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenamiento de Cálculo Mental</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #e0f7fa; /* Azul claro para un ambiente relajante */
+            margin: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #00796b; /* Verde azulado oscuro */
+            margin-bottom: 25px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #00796b;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .level-selection button {
+            background-color: #4caf50; /* Verde brillante */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-selection button:hover {
+            background-color: #43a047;
+            transform: translateY(-2px);
+        }
+
+        .level-selection button.selected {
+            background-color: #00796b; /* Color resaltado para el nivel seleccionado */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .game-area {
+            margin-top: 30px;
+        }
+
+        .question {
+            font-size: 3em;
+            font-weight: bold;
+            color: #3f51b5; /* Azul índigo */
+            margin-bottom: 20px;
+            min-height: 1.5em; /* Para evitar saltos al cargar la pregunta */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        #answerInput {
+            padding: 12px 20px;
+            font-size: 1.5em;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            width: 150px;
+            transition: border-color 0.3s ease;
+        }
+
+        #answerInput:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        #checkButton {
+            background-color: #ff9800; /* Naranja */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #checkButton:hover {
+            background-color: #fb8c00;
+            transform: translateY(-2px);
+        }
+
+        .result-message {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 1.5em; /* Para evitar saltos */
+        }
+
+        .result-message.correct {
+            color: #4CAF50; /* Verde */
+        }
+
+        .result-message.incorrect {
+            color: #f44336; /* Rojo */
+        }
+
+        #decompositionExplanation {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #555;
+            background-color: #e3f2fd; /* Fondo suave para la explicación */
+            padding: 15px;
+            border-left: 5px solid #2196f3; /* Borde azul para destacar */
+            border-radius: 5px;
+            text-align: left;
+            display: none; /* Oculto por defecto */
+        }
+
+        #decompositionExplanation p {
+            margin: 5px 0;
+        }
+
+        #decompositionExplanation strong {
+            color: #3f51b5;
+        }
+
+        .score-display {
+            font-size: 1.5em;
+            margin-top: 25px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .score-display span {
+            color: #3f51b5;
+        }
+
+        .next-button {
+            background-color: #2196f3; /* Azul */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .next-button:hover {
+            background-color: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 25px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            .level-selection button {
+                padding: 10px 15px;
+                font-size: 1em;
+            }
+            .question {
+                font-size: 2.5em;
+            }
+            #answerInput {
+                width: 100px;
+                font-size: 1.2em;
+            }
+            #checkButton {
+                padding: 10px 15px;
+                font-size: 1.2em;
+            }
+            .result-message {
+                font-size: 1.5em;
+            }
+            #decompositionExplanation {
+                font-size: 1em;
+            }
+            .score-display {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .level-selection {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+            }
+            .level-selection button {
+                margin: 5px;
+            }
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #answerInput {
+                width: 80%;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Entrenamiento de Cálculo Mental</h1>
+
+        <h2>Selecciona tu Nivel:</h2>
+        <div class="level-selection" id="levelSelection">
+            <button data-level="1">1º Primaria</button>
+            <button data-level="2">2º Primaria</button>
+            <button data-level="3">3º Primaria</button>
+            <button data-level="4">4º Primaria</button>
+            <button data-level="5">5º Primaria</button>
+            <button data-level="6">6º Primaria</button>
+        </div>
+
+        <div class="game-area">
+            <p class="question" id="mathQuestion">Selecciona un nivel para empezar...</p>
+            <div class="input-group">
+                <input type="number" id="answerInput" placeholder="Tu respuesta">
+                <button id="checkButton">Comprobar</button>
+            </div>
+            <p class="result-message" id="resultMessage"></p>
+            <div id="decompositionExplanation"></div> 
+            <p class="score-display">Puntuación: <span id="currentScore">0/0</span></p>
+            <button class="next-button" id="nextQuestionButton" style="display: none;">Siguiente Pregunta</button>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 0;
+        let correctAnswers = 0; // Para contar los aciertos
+        let totalAttempts = 0; // Para contar los intentos
+        let currentProblem = {}; // Almacena la pregunta, la respuesta correcta y la explicación de la descomposición
+
+        const levelButtons = document.querySelectorAll('.level-selection button');
+        const mathQuestionDiv = document.getElementById('mathQuestion');
+        const answerInput = document.getElementById('answerInput');
+        const checkButton = document.getElementById('checkButton');
+        const resultMessageDiv = document.getElementById('resultMessage');
+        const decompositionExplanationDiv = document.getElementById('decompositionExplanation');
+        const currentScoreSpan = document.getElementById('currentScore');
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+
+        // --- Event Listeners ---
+        levelButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                // Elimina la clase 'selected' de todos los botones
+                levelButtons.forEach(btn => btn.classList.remove('selected'));
+                // Añade la clase 'selected' al botón clicado
+                event.target.classList.add('selected');
+
+                currentLevel = parseInt(event.target.dataset.level);
+                correctAnswers = 0; // Reinicia aciertos al cambiar de nivel
+                totalAttempts = 0; // Reinicia intentos al cambiar de nivel
+                updateScore();
+                resultMessageDiv.textContent = ''; // Limpia mensajes anteriores
+                decompositionExplanationDiv.style.display = 'none'; // Oculta la explicación al cambiar de nivel
+                nextQuestionButton.style.display = 'none'; // Oculta el botón de siguiente
+
+                generateNewProblem();
+                answerInput.focus(); // Enfoca el input para empezar a escribir
+            });
+        });
+
+        checkButton.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        nextQuestionButton.addEventListener('click', generateNewProblem);
+
+        // --- Game Logic ---
+
+        function generateNewProblem() {
+            let num1, num2, operation, correctAnswer, decompositionExplanation;
+            resultMessageDiv.textContent = ''; // Limpia el mensaje de resultado
+            decompositionExplanationDiv.style.display = 'none'; // Oculta la explicación de la descomposición
+            answerInput.value = ''; // Limpia el input de respuesta
+            checkButton.style.display = 'inline-block'; // Muestra el botón de comprobar
+            nextQuestionButton.style.display = 'none'; // Oculta el botón de siguiente
+            answerInput.readOnly = false; // Habilita el input
+            answerInput.focus(); // Enfoca el input
+
+            switch (currentLevel) {
+                case 1: // 1º Primaria: Sumas y restas simples hasta 20/30 (ej. 15 + 8)
+                    if (Math.random() < 0.5) { // Sumas
+                        num1 = Math.floor(Math.random() * 10) + 10; // 10-19
+                        num2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                        
+                        // Explicación: saltando por las unidades
+                        const diffToNextTen = 10 - (num1 % 10);
+                        if (num2 >= diffToNextTen) {
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Puedes descomponer ${num2} en ${diffToNextTen} y ${num2 - diffToNextTen}.</p>
+                                <p>Primero, ${num1} + ${diffToNextTen} = ${num1 + diffToNextTen}.</p>
+                                <p>Luego, ${num1 + diffToNextTen} + ${num2 - diffToNextTen} = <strong>${correctAnswer}</strong>.</p>
+                                <p>Así: ${num1} + ${diffToNextTen} + ${num2 - diffToNextTen}</p>
+                            `;
+                        } else {
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Puedes sumar las unidades: ${num1 % 10} + ${num2} = ${num1 % 10 + num2}.</p>
+                                <p>Luego, añade las decenas: ${Math.floor(num1 / 10)}0 + ${num1 % 10 + num2} = <strong>${correctAnswer}</strong>.</p>
+                                <p>O directamente: ${num1} y le sumas ${num2}.</p>
+                            `;
+                        }
+                    } else { // Restas
+                        num1 = Math.floor(Math.random() * 10) + 15; // 15-24
+                        num2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 5)) + 1; // Asegura resta positiva
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+
+                        // Explicación: restando por las unidades hasta la decena anterior
+                        const num1Units = num1 % 10;
+                        if (num2 > num1Units) {
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Puedes descomponer ${num2} en ${num1Units} y ${num2 - num1Units}.</p>
+                                <p>Primero, ${num1} - ${num1Units} = ${num1 - num1Units}.</p>
+                                <p>Luego, ${num1 - num1Units} - ${num2 - num1Units} = <strong>${correctAnswer}</strong>.</p>
+                                <p>Así: ${num1} - ${num1Units} - ${num2 - num1Units}</p>
+                            `;
+                        } else {
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Resta las unidades: ${num1Units} - ${num2} = ${num1Units - num2}.</p>
+                                <p>Luego, junta las decenas: ${Math.floor(num1 / 10)}0 + ${num1Units - num2} = <strong>${correctAnswer}</strong>.</p>
+                            `;
+                        }
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                case 2: // 2º Primaria: Sumas/Restas hasta 100, multiplicaciones simples
+                    const opType2 = Math.random();
+                    if (opType2 < 0.4) { // Sumas
+                        num1 = Math.floor(Math.random() * 70) + 20; // 20-90
+                        num2 = Math.floor(Math.random() * 40) + 10; // 10-50
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                        // Explicación: Descomposición por decenas y unidades
+                        const num1Dec = Math.floor(num1 / 10) * 10;
+                        const num1Uni = num1 % 10;
+                        const num2Dec = Math.floor(num2 / 10) * 10;
+                        const num2Uni = num2 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón: ${num1} = ${num1Dec} + ${num1Uni} y ${num2} = ${num2Dec} + ${num2Uni}.</p>
+                            <p>Suma las decenas: ${num1Dec} + ${num2Dec} = ${num1Dec + num2Dec}.</p>
+                            <p>Suma las unidades: ${num1Uni} + ${num2Uni} = ${num1Uni + num2Uni}.</p>
+                            <p>Junta los resultados: ${num1Dec + num2Dec} + ${num1Uni + num2Uni} = <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType2 < 0.8) { // Restas
+                        num1 = Math.floor(Math.random() * 70) + 40; // 40-110
+                        num2 = Math.floor(Math.random() * 30) + 10; // 10-40
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 15)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                        // Explicación: Restando por decenas y luego unidades
+                        const num2Dec = Math.floor(num2 / 10) * 10;
+                        const num2Uni = num2 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón ${num2} en ${num2Dec} y ${num2Uni}.</p>
+                            <p>Primero, ${num1} - ${num2Dec} = ${num1 - num2Dec}.</p>
+                            <p>Luego, ${num1 - num2Dec} - ${num2Uni} = <strong>${correctAnswer}</strong>.</p>
+                            <p>Así: ${num1} - ${num2Dec} - ${num2Uni}</p>
+                        `;
+                    } else { // Multiplicaciones 2x2 hasta 9x9
+                        num1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        num2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Puedes usar la tabla de multiplicar.</p>
+                            <p>Ejemplo: Si fuera ${num1} × 10 = ${num1 * 10}, y luego ajustas.</p>
+                            <p>O recordar que ${num1} veces ${num2} es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                case 3: // 3º Primaria: Sumas/Restas hasta 1000, multi. 1 dígito por 2/3 dígitos
+                    const opType3 = Math.random();
+                    if (opType3 < 0.35) { // Sumas
+                        num1 = Math.floor(Math.random() * 500) + 100;
+                        num2 = Math.floor(Math.random() * 300) + 50;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Suma las centenas: ${Math.floor(num1 / 100) * 100} + ${Math.floor(num2 / 100) * 100} = ${Math.floor(num1 / 100) * 100 + Math.floor(num2 / 100) * 100}.</p>
+                            <p>Suma las decenas: ${Math.floor((num1 % 100) / 10) * 10} + ${Math.floor((num2 % 100) / 10) * 10} = ${Math.floor((num1 % 100) / 10) * 10 + Math.floor((num2 % 100) / 10) * 10}.</p>
+                            <p>Suma las unidades: ${num1 % 10} + ${num2 % 10} = ${num1 % 10 + num2 % 10}.</p>
+                            <p>Junta todo: <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType3 < 0.7) { // Restas
+                        num1 = Math.floor(Math.random() * 500) + 300;
+                        num2 = Math.floor(Math.random() * 200) + 50;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 100)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Resta por centenas, luego decenas y luego unidades.</p>
+                            <p>Ejemplo: ${num1} - ${Math.floor(num2 / 100) * 100} = ${num1 - (Math.floor(num2 / 100) * 100)}</p>
+                            <p>Luego, resta las decenas y las unidades de ${num2}.</p>
+                            <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else { // Multiplicaciones 1x2 digitos (ej. 3 * 24 -> 3*20 + 3*4)
+                        num1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        num2 = Math.floor(Math.random() * 80) + 10; // 10-90
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        const num2Dec = Math.floor(num2 / 10) * 10;
+                        const num2Uni = num2 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón ${num2} en ${num2Dec} y ${num2Uni}.</p>
+                            <p>Calcula ${num1} ${operation} ${num2Dec} = ${num1 * num2Dec}.</p>
+                            <p>Calcula ${num1} ${operation} ${num2Uni} = ${num1 * num2Uni}.</p>
+                            <p>Suma los resultados: ${num1 * num2Dec} + ${num1 * num2Uni} = <strong>${correctAnswer}</strong>.</p>
+                            <p>Así: (${num1} × ${num2Dec}) + (${num1} × ${num2Uni})</p>
+                        `;
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                case 4: // 4º Primaria: Sumas/Restas mayores, multi. 2 dig. por 1 dig., div. exactas
+                    const opType4 = Math.random();
+                    if (opType4 < 0.3) { // Sumas
+                        num1 = Math.floor(Math.random() * 1000) + 200;
+                        num2 = Math.floor(Math.random() * 500) + 100;
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Suma por bloques de centenas, decenas y unidades.</p>
+                            <p>Ejemplo: ${Math.floor(num1 / 100) * 100} + ${Math.floor(num2 / 100) * 100}, luego el resto.</p>
+                            <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType4 < 0.6) { // Restas
+                        num1 = Math.floor(Math.random() * 1000) + 500;
+                        num2 = Math.floor(Math.random() * 400) + 100;
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 200)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Resta el sustraendo por partes (centenas, decenas, unidades).</p>
+                            <p>Ejemplo: ${num1} - ${Math.floor(num2 / 100) * 100}, luego las decenas, luego las unidades.</p>
+                            <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType4 < 0.85) { // Multiplicaciones 2x1 digitos
+                        num1 = Math.floor(Math.random() * 80) + 20; // 20-99
+                        num2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        const num1Dec = Math.floor(num1 / 10) * 10;
+                        const num1Uni = num1 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón ${num1} en ${num1Dec} y ${num1Uni}.</p>
+                            <p>Calcula (${num1Dec} ${operation} ${num2}) + (${num1Uni} ${operation} ${num2}).</p>
+                            <p>Es decir, ${num1Dec * num2} + ${num1Uni * num2} = <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else { // Divisiones exactas simples
+                        num2 = Math.floor(Math.random() * 8) + 2; // Divisor 2-9
+                        num1 = num2 * (Math.floor(Math.random() * 20) + 5); // Cociente 5-24
+                        operation = '÷';
+                        correctAnswer = num1 / num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>¿Cuántas veces cabe ${num2} en ${num1}?</p>
+                            <p>Piensa en la tabla de multiplicar de ${num2}.</p>
+                            <p>El cociente es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                case 5: // 5º Primaria: Sumas/Restas hasta decenas de miles, multi. 2x2 dig.
+                    const opType5 = Math.random();
+                    if (opType5 < 0.25) { // Sumas - Rangos ajustados
+                        num1 = Math.floor(Math.random() * 5000) + 1000; // 1000-5999
+                        num2 = Math.floor(Math.random() * 2000) + 500; // 500-2499
+                        operation = '+';
+                        correctAnswer = num1 + num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Suma por bloques de miles, centenas, decenas y unidades.</p>
+                            <p>Ejemplo: ${Math.floor(num1 / 1000) * 1000} + ${Math.floor(num2 / 1000) * 1000}, luego el resto.</p>
+                            <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType5 < 0.5) { // Restas - Rangos ajustados
+                        num1 = Math.floor(Math.random() * 6000) + 3000; // 3000-8999
+                        num2 = Math.floor(Math.random() * 2500) + 500; // 500-2999
+                        if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 1000)) + 1;
+                        operation = '-';
+                        correctAnswer = num1 - num2;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Resta el sustraendo por sus valores posicionales.</p>
+                            <p>Ejemplo: ${num1} - ${Math.floor(num2 / 1000) * 1000}, luego el resto.</p>
+                            <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    } else if (opType5 < 0.75) { // Multiplicaciones 2x2 digitos - Rangos ajustados
+                        num1 = Math.floor(Math.random() * 50) + 10; // 10-59
+                        num2 = Math.floor(Math.random() * 50) + 10; // 10-59
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        const num2Dec = Math.floor(num2 / 10) * 10;
+                        const num2Uni = num2 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón ${num2} en ${num2Dec} y ${num2Uni}.</p>
+                            <p>Calcula (${num1} ${operation} ${num2Dec}) + (${num1} ${operation} ${num2Uni}).</p>
+                            <p>Es decir, ${num1 * num2Dec} + ${num1 * num2Uni} = <strong>${correctAnswer}</strong>.</p>
+                            <p>Así: (${num1} × ${num2Dec}) + (${num1} × ${num2Uni})</p>
+                        `;
+                    } else { // Divisiones con resto - Rangos ajustados
+                        num2 = Math.floor(Math.random() * 8) + 5; // Divisor 5-12
+                        let quotient = Math.floor(Math.random() * 30) + 10; // Cociente 10-39
+                        let remainder = Math.floor(Math.random() * (num2 - 1)) + 1; // Resto 1 a num2-1
+                        num1 = num2 * quotient + remainder;
+                        operation = '÷';
+                        correctAnswer = Math.floor(num1 / num2); // Para este nivel, se espera la respuesta exacta de la división entera
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Piensa en cuántas veces cabe ${num2} en ${num1}.</p>
+                            <p>O qué múltiplo de ${num2} se acerca más a ${num1} sin pasarse.</p>
+                            <p>El cociente es <strong>${correctAnswer}</strong> y el resto es ${num1 % num2}.</p>
+                        `;
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                case 6: // 6º Primaria: Números más grandes, decimales, más operaciones
+                    const opType6 = Math.random();
+                    if (opType6 < 0.3) { // Multiplicaciones/Divisiones con decimales simples - Rangos ajustados
+                        if (Math.random() < 0.5) { // Multiplicación con decimales (ej. 2.5 * 3)
+                            num1 = (Math.floor(Math.random() * 50) + 10) / 10; // 1.0 - 5.9
+                            num2 = Math.floor(Math.random() * 4) + 2; // Entero 2-5
+                            operation = '×';
+                            correctAnswer = parseFloat((num1 * num2).toFixed(2));
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Multiplica como si no hubiera decimal: ${num1 * 10} × ${num2} = ${(num1 * 10) * num2}.</p>
+                                <p>Luego, mueve la coma un lugar hacia la izquierda (porque ${num1} tenía un decimal).</p>
+                                <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                            `;
+                        } else { // División con decimales (ej. 7.5 / 2.5) - Rangos ajustados
+                            let divisorDec = Math.floor(Math.random() * 3) + 1; // 1-3
+                            let divisor = divisorDec / 10; // 0.1-0.3
+                            let cociente = Math.floor(Math.random() * 6) + 5; // 5-10
+                            num1 = parseFloat((divisor * cociente).toFixed(2));
+                            num2 = divisor;
+                            operation = '÷';
+                            correctAnswer = parseFloat((num1 / num2).toFixed(2));
+                             decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Para dividir con decimales, puedes multiplicar ambos números por 10, 100, etc., hasta que el divisor sea un número entero.</p>
+                                <p>Ejemplo: Si ${num2} tuviera un decimal, multiplica ${num1} y ${num2} por 10.</p>
+                                <p>Entonces divide los nuevos números. El resultado es <strong>${correctAnswer}</strong>.</p>
+                            `;
+                        }
+                    } else if (opType6 < 0.65) { // Sumas/Restas de números grandes - Rangos ajustados
+                        num1 = Math.floor(Math.random() * 20000) + 10000; // 10000-29999
+                        num2 = Math.floor(Math.random() * 10000) + 1000; // 1000-10999
+                        if (Math.random() < 0.5) {
+                            operation = '+';
+                            correctAnswer = num1 + num2;
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Suma los números grandes por sus valores posicionales: decenas de miles, miles, centenas, decenas y unidades.</p>
+                                <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                            `;
+                        } else {
+                            if (num2 >= num1) num2 = Math.floor(Math.random() * (num1 - 5000)) + 1000;
+                            operation = '-';
+                            correctAnswer = num1 - num2;
+                            decompositionExplanation = `
+                                <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                                <p>Resta los números grandes por sus valores posicionales, empezando por las unidades.</p>
+                                <p>El resultado es <strong>${correctAnswer}</strong>.</p>
+                            `;
+                        }
+                    } else { // Multiplicaciones de 3 dígitos por 2 dígitos
+                        num1 = Math.floor(Math.random() * 200) + 100; // 100-299
+                        num2 = Math.floor(Math.random() * 40) + 10; // 10-49
+                        operation = '×';
+                        correctAnswer = num1 * num2;
+                        const num2Dec = Math.floor(num2 / 10) * 10;
+                        const num2Uni = num2 % 10;
+                        decompositionExplanation = `
+                            <p><strong>${num1} ${operation} ${num2}:</strong></p>
+                            <p>Descompón ${num2} en ${num2Dec} y ${num2Uni}.</p>
+                            <p>Multiplica ${num1} por ${num2Dec} y luego ${num1} por ${num2Uni}.</p>
+                            <p>Luego suma los dos resultados: (${num1} × ${num2Dec}) + (${num1} × ${num2Uni}) = ${num1 * num2Dec} + ${num1 * num2Uni} = <strong>${correctAnswer}</strong>.</p>
+                        `;
+                    }
+                    mathQuestionDiv.textContent = `${num1} ${operation} ${num2} = ?`;
+                    break;
+
+                default:
+                    mathQuestionDiv.textContent = "Selecciona un nivel para empezar...";
+                    return;
+            }
+            currentProblem = { num1, num2, operation, correctAnswer, decompositionExplanation };
+        }
+
+        function checkAnswer() {
+            if (currentLevel === 0) {
+                resultMessageDiv.textContent = "¡Por favor, selecciona un nivel primero!";
+                resultMessageDiv.className = 'result-message incorrect';
+                return;
+            }
+
+            const userAnswer = parseFloat(answerInput.value);
+            totalAttempts++;
+
+            if (!isNaN(userAnswer) && userAnswer === currentProblem.correctAnswer) {
+                resultMessageDiv.textContent = '¡Correcto!';
+                resultMessageDiv.className = 'result-message correct';
+                correctAnswers++;
+                answerInput.readOnly = true; // Deshabilita el input
+                checkButton.style.display = 'none'; // Oculta el botón de comprobar
+                nextQuestionButton.style.display = 'inline-block'; // Muestra el botón de siguiente
+            } else {
+                resultMessageDiv.textContent = `Incorrecto. La respuesta correcta era ${currentProblem.correctAnswer}.`;
+                resultMessageDiv.className = 'result-message incorrect';
+                answerInput.readOnly = true; // Deshabilita el input
+                checkButton.style.display = 'none'; // Oculta el botón de comprobar
+                nextQuestionButton.style.display = 'inline-block'; // Muestra el botón de siguiente
+            }
+            updateScore();
+            // Muestra la explicación siempre después de comprobar la respuesta
+            decompositionExplanationDiv.innerHTML = currentProblem.decompositionExplanation;
+            decompositionExplanationDiv.style.display = 'block';
+        }
+
+        function updateScore() {
+            currentScoreSpan.textContent = `${correctAnswers}/${totalAttempts}`;
+        }
+    </script>
+</body>
+</html>
